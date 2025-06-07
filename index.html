@@ -27,14 +27,14 @@
         header {
             background: linear-gradient(135deg, #1e3c72, #2a5298);
             color: white;
-            padding: 2rem 0;
+            padding: 0.5rem 0;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             margin-bottom: 2rem;
         }
 
         h1 {
             text-align: center;
-            font-size: 2rem;
+            font-size: 1.25rem;
             font-weight: 600;
         }
 
@@ -246,11 +246,44 @@
             width: 100%;
             max-width: 400px;
             margin: 1rem auto;
+            position: relative;
         }
 
         #scanner-video {
             width: 100%;
             border-radius: 8px;
+        }
+
+        #interactive {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        #interactive video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        #interactive canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .scanner-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 250px;
+            height: 100px;
+            border: 3px solid #00ff00;
+            border-radius: 8px;
+            pointer-events: none;
         }
 
         .stats {
@@ -498,13 +531,20 @@
     <div id="scannerModal" class="modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closeScanner()">&times;</span>
-            <h3 style="margin-bottom: 1rem;">Scan Equipment Code</h3>
+            <h3 style="margin-bottom: 1rem;">Scan Equipment Barcode</h3>
             <div id="scanner-container">
-                <video id="scanner-video"></video>
-                <canvas id="scanner-canvas" style="display: none;"></canvas>
+                <div id="interactive" class="viewport">
+                    <div class="scanner-overlay"></div>
+                </div>
+                <div id="scanner-result" style="margin-top: 1rem; text-align: center; font-weight: bold; color: #2a5298;"></div>
             </div>
-            <p style="text-align: center; margin-top: 1rem; color: #666;">Position the code within the camera view</p>
-            <button onclick="simulateScan()" style="width: 100%; margin-top: 1rem; background: #87ceeb; color: #1e3c72;">Simulate Scan (Demo)</button>
+            <p style="text-align: center; margin-top: 1rem; color: #666;">Position the barcode within the green box</p>
+            <div style="margin-top: 1rem;">
+                <select id="cameraSelect" onchange="changeCamera()" style="width: 100%; margin-bottom: 0.5rem;">
+                    <option value="">Select Camera</option>
+                </select>
+            </div>
+            <button onclick="simulateScan()" style="width: 100%; margin-top: 0.5rem; background: #87ceeb; color: #1e3c72;">Simulate Scan (Demo)</button>
         </div>
     </div>
 
@@ -727,36 +767,137 @@
         }
 
         // Scanner functionality
+        let scannerInitialized = false;
+        
         function openScanner() {
             document.getElementById('scannerModal').style.display = 'flex';
-            startScanner();
+            if (!scannerInitialized) {
+                initializeScanner();
+            } else {
+                Quagga.start();
+            }
         }
 
         function closeScanner() {
             document.getElementById('scannerModal').style.display = 'none';
-            stopScanner();
+            if (scannerInitialized) {
+                Quagga.stop();
+            }
+            document.getElementById('scanner-result').textContent = '';
         }
 
-        function startScanner() {
-            const video = document.getElementById('scanner-video');
-            
-            navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
-                .then(stream => {
-                    scannerStream = stream;
-                    video.srcObject = stream;
-                    video.play();
+        function initializeScanner() {
+            // First, enumerate cameras
+            Quagga.CameraAccess.enumerateVideoDevices()
+                .then(function(devices) {
+                    const cameraSelect = document.getElementById('cameraSelect');
+                    cameraSelect.innerHTML = '<option value="">Select Camera</option>';
+                    devices.forEach(function(device, idx) {
+                        const option = document.createElement('option');
+                        option.value = device.deviceId;
+                        option.text = device.label || `Camera ${idx + 1}`;
+                        cameraSelect.appendChild(option);
+                    });
+                    
+                    if (devices.length > 0) {
+                        cameraSelect.value = devices[devices.length - 1].deviceId; // Select back camera if available
+                        startScanner(devices[devices.length - 1].deviceId);
+                    }
                 })
-                .catch(err => {
-                    console.error('Camera error:', err);
-                    showError('Camera access not available in this demo. Use the Simulate Scan button or enter ID manually.');
+                .catch(function(err) {
+                    console.error('Camera enumeration error:', err);
+                    showError('Camera access not available. Please enter ID manually or use Simulate Scan.');
                 });
         }
 
-        function stopScanner() {
-            if (scannerStream) {
-                scannerStream.getTracks().forEach(track => track.stop());
-                scannerStream = null;
+        function changeCamera() {
+            const deviceId = document.getElementById('cameraSelect').value;
+            if (deviceId && scannerInitialized) {
+                Quagga.stop();
+                startScanner(deviceId);
             }
+        }
+
+        function startScanner(deviceId) {
+            const config = {
+                inputStream: {
+                    name: "Live",
+                    type: "LiveStream",
+                    target: document.querySelector('#interactive'),
+                    constraints: {
+                        width: 640,
+                        height: 480,
+                        deviceId: deviceId
+                    }
+                },
+                decoder: {
+                    readers: [
+                        "code_128_reader",
+                        "ean_reader",
+                        "ean_8_reader",
+                        "code_39_reader",
+                        "code_39_vin_reader",
+                        "codabar_reader",
+                        "upc_reader",
+                        "upc_e_reader",
+                        "i2of5_reader"
+                    ]
+                },
+                locate: true,
+                locator: {
+                    halfSample: true,
+                    patchSize: "medium"
+                }
+            };
+
+            Quagga.init(config, function(err) {
+                if (err) {
+                    console.error('Quagga init error:', err);
+                    showError('Scanner initialization failed. Please enter ID manually.');
+                    return;
+                }
+                console.log("Scanner initialized successfully");
+                scannerInitialized = true;
+                Quagga.start();
+            });
+
+            // Handle successful scans
+            Quagga.onDetected(function(result) {
+                const code = result.codeResult.code;
+                document.getElementById('scanner-result').textContent = `Scanned: ${code}`;
+                document.getElementById('equipmentId').value = code;
+                
+                // Auto close after successful scan
+                setTimeout(() => {
+                    closeScanner();
+                    showSuccess(`Successfully scanned: ${code}`);
+                }, 1000);
+            });
+
+            // Visual feedback for located barcodes
+            Quagga.onProcessed(function(result) {
+                const drawingCtx = Quagga.canvas.ctx.overlay;
+                const drawingCanvas = Quagga.canvas.dom.overlay;
+
+                if (result) {
+                    if (result.boxes) {
+                        drawingCtx.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
+                        result.boxes.filter(function(box) {
+                            return box !== result.box;
+                        }).forEach(function(box) {
+                            Quagga.ImageDebug.drawPath(box, {x: 0, y: 1}, drawingCtx, {color: "green", lineWidth: 2});
+                        });
+                    }
+
+                    if (result.box) {
+                        Quagga.ImageDebug.drawPath(result.box, {x: 0, y: 1}, drawingCtx, {color: "#00F", lineWidth: 2});
+                    }
+
+                    if (result.codeResult && result.codeResult.code) {
+                        Quagga.ImageDebug.drawPath(result.line, {x: 'x', y: 'y'}, drawingCtx, {color: 'red', lineWidth: 3});
+                    }
+                }
+            });
         }
 
         // Simulate scan for demo
