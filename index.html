@@ -25,27 +25,15 @@
         }
 
         header {
-            background: white;
-            color: #2a5298;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
             padding: 0.5rem 0;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             margin-bottom: 2rem;
-            border-bottom: 2px solid #2a5298;
-        }
-
-        .header-content {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 1rem;
-        }
-
-        .logo {
-            width: 40px;
-            height: 40px;
         }
 
         h1 {
+            text-align: center;
             font-size: 1.25rem;
             font-weight: 600;
         }
@@ -261,31 +249,41 @@
             position: relative;
         }
 
+        #scanner-video {
+            width: 100%;
+            border-radius: 8px;
+        }
+
         #interactive {
             position: relative;
             width: 100%;
             height: 300px;
-            max-width: 400px;
-            margin: 0 auto;
+            border-radius: 8px;
+            overflow: hidden;
         }
 
-        #interactive.viewport {
-            position: relative;
-        }
-
-        #interactive.viewport canvas,
-        #interactive.viewport video {
+        #interactive video {
             width: 100%;
-            height: auto;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        #interactive canvas {
             position: absolute;
             top: 0;
             left: 0;
         }
 
-        #interactive.viewport canvas.drawingBuffer {
+        .scanner-overlay {
             position: absolute;
-            top: 0;
-            left: 0;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 250px;
+            height: 100px;
+            border: 3px solid #00ff00;
+            border-radius: 8px;
+            pointer-events: none;
         }
 
         .stats {
@@ -363,35 +361,22 @@
         .fade-in {
             animation: fadeIn 0.3s ease-out;
         }
+
+        .session-notice {
+            background: #74b9ff;
+            color: white;
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            text-align: center;
+            font-size: 0.9rem;
+        }
     </style>
 </head>
 <body>
     <header>
         <div class="container">
-            <div class="header-content">
-                <svg class="logo" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="100" cy="100" r="95" fill="none" stroke="#0033FF" stroke-width="10"/>
-                    <circle cx="100" cy="100" r="75" fill="#0033FF"/>
-                    <path d="M 50 60 Q 30 80 30 100 Q 30 120 50 140 L 70 140 Q 50 120 50 100 Q 50 80 70 60 Z" fill="white"/>
-                    <rect x="80" y="40" width="40" height="15" fill="white"/>
-                    <rect x="80" y="65" width="40" height="15" fill="white"/>
-                    <path d="M 150 60 L 130 60 Q 150 80 150 100 Q 150 120 130 140 L 150 140 Q 170 120 170 100 Q 170 80 150 60 Z" fill="white"/>
-                    <circle cx="100" cy="100" r="30" fill="none" stroke="white" stroke-width="5"/>
-                    <circle cx="100" cy="70" r="4" fill="white"/>
-                    <circle cx="120" cy="75" r="4" fill="white"/>
-                    <circle cx="130" cy="90" r="4" fill="white"/>
-                    <circle cx="130" cy="110" r="4" fill="white"/>
-                    <circle cx="120" cy="125" r="4" fill="white"/>
-                    <circle cx="100" cy="130" r="4" fill="white"/>
-                    <circle cx="80" cy="125" r="4" fill="white"/>
-                    <circle cx="70" cy="110" r="4" fill="white"/>
-                    <circle cx="70" cy="90" r="4" fill="white"/>
-                    <circle cx="80" cy="75" r="4" fill="white"/>
-                    <text x="100" y="108" text-anchor="middle" font-family="Arial" font-size="24" font-weight="bold" fill="white">Z</text>
-                    <text x="100" y="170" text-anchor="middle" font-family="Arial" font-size="20" font-weight="bold" fill="white">PFFCO</text>
-                </svg>
-                <h1>Folk Fest Radio Inventory System</h1>
-            </div>
+            <h1>Folk Fest Radio Inventory System</h1>
         </div>
     </header>
 
@@ -414,6 +399,10 @@
 
     <!-- Main Application -->
     <div id="mainApp" class="container main-content">
+        <div class="session-notice">
+            <strong>Session Mode:</strong> Data is stored in memory during this session. Use Export CSV to save your data permanently.
+        </div>
+        
         <div class="error-message" id="errorMessage"></div>
         <div class="success-message" id="successMessage"></div>
 
@@ -544,19 +533,18 @@
             <span class="close-modal" onclick="closeScanner()">&times;</span>
             <h3 style="margin-bottom: 1rem;">Scan Equipment Barcode</h3>
             <div id="scanner-container">
-                <video id="scanner-video" style="width: 100%; max-width: 400px; border-radius: 8px;"></video>
+                <div id="interactive" class="viewport">
+                    <div class="scanner-overlay"></div>
+                </div>
                 <div id="scanner-result" style="margin-top: 1rem; text-align: center; font-weight: bold; color: #2a5298;"></div>
             </div>
-            <p style="text-align: center; margin-top: 1rem; color: #666;">Position the barcode within the camera view</p>
+            <p style="text-align: center; margin-top: 1rem; color: #666;">Position the barcode within the green box</p>
             <div style="margin-top: 1rem;">
                 <select id="cameraSelect" onchange="changeCamera()" style="width: 100%; margin-bottom: 0.5rem;">
                     <option value="">Select Camera</option>
                 </select>
             </div>
-            <div style="text-align: center; margin-top: 1rem;">
-                <button onclick="simulateScan()" style="background: #87ceeb; color: #1e3c72; margin-right: 0.5rem;">Simulate Scan (Demo)</button>
-                <button onclick="manualEntry()" style="background: #95a5a6; color: white;">Manual Entry</button>
-            </div>
+            <button onclick="simulateScan()" style="width: 100%; margin-top: 0.5rem; background: #87ceeb; color: #1e3c72;">Simulate Scan (Demo)</button>
         </div>
     </div>
 
@@ -574,29 +562,39 @@
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
-    <script src="https://unpkg.com/@zxing/library@latest"></script>
     <script>
-        // State management
+        // State management - in-memory storage
         let equipment = [];
         let currentView = 'all';
+        let scannerStream = null;
         let isLoggedIn = false;
-        let codeReader = null;
-        let selectedDeviceId = null;
-        let useLocalStorage = true;
 
-        // Check if localStorage is available
-        try {
-            localStorage.setItem('test', 'test');
-            localStorage.removeItem('test');
-        } catch (e) {
-            useLocalStorage = false;
-            console.log('localStorage not available, using in-memory storage');
-        }
+        // Sample data for demonstration
+        const sampleData = [
+            {
+                id: 'RAD-001',
+                committee: 'Production',
+                individual: 'John Smith',
+                phone: '555-0123',
+                status: 'Issued',
+                timestamp: new Date(Date.now() - 86400000).toISOString(),
+                returnedAt: null
+            },
+            {
+                id: 'RAD-002',
+                committee: 'Security',
+                individual: 'Jane Doe',
+                phone: '555-0124',
+                status: 'Returned',
+                timestamp: new Date(Date.now() - 172800000).toISOString(),
+                returnedAt: new Date(Date.now() - 86400000).toISOString()
+            }
+        ];
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
-            loadData();
+            // Load sample data for demonstration
+            equipment = [...sampleData];
             updateStats();
             renderEquipmentTable();
         });
@@ -610,37 +608,10 @@
                 document.getElementById('loginScreen').style.display = 'none';
                 document.getElementById('mainApp').style.display = 'block';
                 isLoggedIn = true;
-                if (useLocalStorage) {
-                    localStorage.setItem('folkFestLoggedIn', 'true');
-                }
             } else {
                 const error = document.getElementById('loginError');
                 error.textContent = 'Invalid credentials. Please try again.';
                 error.style.display = 'block';
-            }
-        }
-
-        // Check login status
-        if (useLocalStorage && localStorage.getItem('folkFestLoggedIn') === 'true') {
-            document.getElementById('loginScreen').style.display = 'none';
-            document.getElementById('mainApp').style.display = 'block';
-            isLoggedIn = true;
-        }
-
-        // Load data
-        function loadData() {
-            if (useLocalStorage) {
-                const stored = localStorage.getItem('folkFestEquipment');
-                if (stored) {
-                    equipment = JSON.parse(stored);
-                }
-            }
-        }
-
-        // Save data
-        function saveData() {
-            if (useLocalStorage) {
-                localStorage.setItem('folkFestEquipment', JSON.stringify(equipment));
             }
         }
 
@@ -674,7 +645,6 @@
             };
 
             equipment.push(newRecord);
-            saveData();
             updateStats();
             renderEquipmentTable();
             clearForm();
@@ -687,7 +657,6 @@
             if (item) {
                 item.status = 'Returned';
                 item.returnedAt = new Date().toISOString();
-                saveData();
                 updateStats();
                 renderEquipmentTable();
                 showSuccess('Equipment returned successfully!');
@@ -798,222 +767,199 @@
         }
 
         // Scanner functionality
+        let scannerInitialized = false;
+        let currentDeviceId = null;
+        
         function openScanner() {
             document.getElementById('scannerModal').style.display = 'flex';
             initializeScanner();
         }
 
-        function fallbackScanner() {
-            // Basic camera without scanning
-            const video = document.getElementById('scanner-video');
-            
-            navigator.mediaDevices.getUserMedia({ 
-                video: { 
-                    facingMode: 'environment',
-                    width: { ideal: 1280 },
-                    height: { ideal: 720 }
-                } 
-            })
-            .then(stream => {
-                video.srcObject = stream;
-                video.play();
-                
-                // Show manual entry suggestion
-                document.getElementById('scanner-result').textContent = 'Camera active - use manual entry if scan fails';
-            })
-            .catch(err => {
-                console.error('Camera error:', err);
-                showError('Camera not accessible. Please use manual entry or simulate scan.');
-            });
-        }
-
         function closeScanner() {
             document.getElementById('scannerModal').style.display = 'none';
-            
-            // Clean up based on what scanner was used
-            if (codeReader) {
-                codeReader.reset();
-                codeReader = null;
-            }
-            
-            if (typeof Quagga !== 'undefined' && Quagga.stop) {
+            if (scannerInitialized) {
                 Quagga.stop();
-                Quagga.offDetected();
+                scannerInitialized = false;
             }
-            
-            // Clean up any Quagga divs
-            const interactive = document.getElementById('interactive');
-            if (interactive) {
-                interactive.remove();
-            }
-            
-            // Stop any video streams
-            const video = document.getElementById('scanner-video');
-            if (video.srcObject) {
-                video.srcObject.getTracks().forEach(track => track.stop());
-                video.srcObject = null;
-            }
-            video.style.display = 'block'; // Reset display
-            
             document.getElementById('scanner-result').textContent = '';
         }
 
         function initializeScanner() {
-            // Check if ZXing is loaded
-            if (typeof ZXing !== 'undefined') {
-                try {
-                    codeReader = new ZXing.BrowserMultiFormatReader();
-                    console.log('ZXing scanner initialized');
-                    
-                    // Get available cameras
-                    codeReader.listVideoInputDevices()
-                        .then((videoInputDevices) => {
-                            const cameraSelect = document.getElementById('cameraSelect');
-                            cameraSelect.innerHTML = '<option value="">Select Camera</option>';
-                            
-                            if (videoInputDevices.length > 0) {
-                                videoInputDevices.forEach((device, idx) => {
-                                    const option = document.createElement('option');
-                                    option.value = device.deviceId;
-                                    option.text = device.label || `Camera ${idx + 1}`;
-                                    cameraSelect.appendChild(option);
-                                });
-                                
-                                // Select the last camera (usually back camera on mobile)
-                                selectedDeviceId = videoInputDevices[videoInputDevices.length - 1].deviceId;
-                                cameraSelect.value = selectedDeviceId;
-                                
-                                startScanning(selectedDeviceId);
-                            } else {
-                                showError('No cameras found. Please use manual entry.');
-                            }
-                        })
-                        .catch((err) => {
-                            console.error('Camera listing error:', err);
-                            useQuaggaScanner();
+            // First, enumerate cameras
+            if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
+                navigator.mediaDevices.enumerateDevices()
+                    .then(function(devices) {
+                        const videoDevices = devices.filter(device => device.kind === 'videoinput');
+                        const cameraSelect = document.getElementById('cameraSelect');
+                        cameraSelect.innerHTML = '<option value="">Select Camera</option>';
+                        
+                        videoDevices.forEach(function(device, idx) {
+                            const option = document.createElement('option');
+                            option.value = device.deviceId;
+                            option.text = device.label || `Camera ${idx + 1}`;
+                            cameraSelect.appendChild(option);
                         });
-                } catch (err) {
-                    console.error('ZXing initialization error:', err);
-                    useQuaggaScanner();
-                }
+                        
+                        if (videoDevices.length > 0) {
+                            // Try to select back camera (usually has 'back' in the label)
+                            let selectedDevice = videoDevices[videoDevices.length - 1];
+                            for (let device of videoDevices) {
+                                if (device.label.toLowerCase().includes('back')) {
+                                    selectedDevice = device;
+                                    break;
+                                }
+                            }
+                            cameraSelect.value = selectedDevice.deviceId;
+                            currentDeviceId = selectedDevice.deviceId;
+                            startScanner(selectedDevice.deviceId);
+                        } else {
+                            showError('No cameras found. Please enter ID manually.');
+                        }
+                    })
+                    .catch(function(err) {
+                        console.error('Camera enumeration error:', err);
+                        showError('Camera access not available. Please enter ID manually or use Simulate Scan.');
+                    });
             } else {
-                console.log('ZXing not loaded, trying Quagga');
-                useQuaggaScanner();
+                showError('Camera API not supported in this browser.');
             }
-        }
-
-        function startScanning(deviceId) {
-            if (!codeReader) return;
-            
-            codeReader.decodeFromVideoDevice(deviceId, 'scanner-video', (result, err) => {
-                if (result) {
-                    const code = result.text;
-                    document.getElementById('scanner-result').textContent = `Scanned: ${code}`;
-                    document.getElementById('equipmentId').value = code;
-                    
-                    // Feedback
-                    if (navigator.vibrate) {
-                        navigator.vibrate(200);
-                    }
-                    
-                    // Auto close
-                    setTimeout(() => {
-                        closeScanner();
-                        showSuccess(`Successfully scanned: ${code}`);
-                    }, 1000);
-                }
-                if (err && !(err instanceof ZXing.NotFoundException)) {
-                    console.error(err);
-                }
-            });
         }
 
         function changeCamera() {
             const deviceId = document.getElementById('cameraSelect').value;
-            if (deviceId && deviceId !== selectedDeviceId) {
-                selectedDeviceId = deviceId;
-                if (codeReader) {
-                    codeReader.reset();
-                    startScanning(deviceId);
+            if (deviceId && deviceId !== currentDeviceId) {
+                currentDeviceId = deviceId;
+                if (scannerInitialized) {
+                    Quagga.stop();
+                    scannerInitialized = false;
+                    // Clear the canvas
+                    const interactive = document.querySelector('#interactive');
+                    interactive.innerHTML = '<div class="scanner-overlay"></div>';
+                    // Small delay to ensure proper cleanup
+                    setTimeout(() => {
+                        startScanner(deviceId);
+                    }, 100);
+                } else {
+                    startScanner(deviceId);
                 }
             }
         }
 
-        function useQuaggaScanner() {
-            // Use Quagga for barcode scanning
-            if (typeof Quagga !== 'undefined') {
-                const video = document.getElementById('scanner-video');
-                video.style.display = 'none'; // Hide video element for Quagga
-                
-                // Create container for Quagga
-                const container = document.getElementById('scanner-container');
-                const quaggaDiv = document.createElement('div');
-                quaggaDiv.id = 'interactive';
-                quaggaDiv.className = 'viewport';
-                quaggaDiv.style.width = '100%';
-                quaggaDiv.style.maxWidth = '400px';
-                container.appendChild(quaggaDiv);
-                
-                Quagga.init({
-                    inputStream: {
-                        name: "Live",
-                        type: "LiveStream",
-                        target: quaggaDiv,
-                        constraints: {
-                            width: 640,
-                            height: 480,
-                            facingMode: "environment"
+        function startScanner(deviceId) {
+            const config = {
+                inputStream: {
+                    name: "Live",
+                    type: "LiveStream",
+                    target: document.querySelector('#interactive'),
+                    constraints: {
+                        width: { min: 640 },
+                        height: { min: 480 },
+                        facingMode: "environment",
+                        deviceId: deviceId ? { exact: deviceId } : undefined
+                    }
+                },
+                decoder: {
+                    readers: [
+                        "code_128_reader",
+                        "ean_reader",
+                        "ean_8_reader",
+                        "code_39_reader",
+                        "code_39_vin_reader",
+                        "codabar_reader",
+                        "upc_reader",
+                        "upc_e_reader",
+                        "i2of5_reader"
+                    ],
+                    debug: {
+                        drawBoundingBox: true,
+                        showFrequency: false,
+                        drawScanline: true,
+                        showPattern: false
+                    }
+                },
+                locate: true,
+                locator: {
+                    halfSample: true,
+                    patchSize: "medium",
+                    debug: {
+                        showCanvas: false,
+                        showPatches: false,
+                        showFoundPatches: false,
+                        showSkeleton: false,
+                        showLabels: false,
+                        showPatchLabels: false,
+                        showRemainingPatchLabels: false,
+                        boxFromPatches: {
+                            showTransformed: false,
+                            showTransformedBox: false,
+                            showBB: false
                         }
-                    },
-                    decoder: {
-                        readers: [
-                            "code_128_reader",
-                            "ean_reader",
-                            "ean_8_reader",
-                            "code_39_reader",
-                            "code_39_vin_reader",
-                            "codabar_reader",
-                            "upc_reader",
-                            "upc_e_reader",
-                            "i2of5_reader"
-                        ]
-                    },
-                    locate: true
-                }, function(err) {
-                    if (err) {
-                        console.error('Quagga init error:', err);
-                        fallbackScanner();
-                        return;
                     }
-                    console.log("Quagga initialization succeeded");
-                    Quagga.start();
-                });
+                }
+            };
 
-                // Handle barcode detection
-                Quagga.onDetected(function(result) {
-                    const code = result.codeResult.code;
-                    console.log('Barcode detected:', code);
-                    document.getElementById('scanner-result').textContent = `Scanned: ${code}`;
-                    document.getElementById('equipmentId').value = code;
-                    
-                    if (navigator.vibrate) {
-                        navigator.vibrate(200);
-                    }
-                    
-                    setTimeout(() => {
-                        closeScanner();
-                        showSuccess(`Successfully scanned: ${code}`);
-                    }, 1000);
-                });
-            } else {
-                console.log('Quagga not loaded, using fallback');
-                fallbackScanner();
-            }
+            Quagga.init(config, function(err) {
+                if (err) {
+                    console.error('Quagga init error:', err);
+                    showError('Scanner initialization failed. Please enter ID manually.');
+                    return;
+                }
+                console.log("Scanner initialized successfully");
+                scannerInitialized = true;
+                Quagga.start();
+                
+                // Set up event handlers after successful init
+                setupScannerHandlers();
+            });
         }
 
-        function manualEntry() {
-            closeScanner();
-            document.getElementById('equipmentId').focus();
+        function setupScannerHandlers() {
+            // Remove any existing handlers to prevent duplicates
+            Quagga.offDetected();
+            Quagga.offProcessed();
+
+            // Handle successful scans
+            Quagga.onDetected(function(result) {
+                const code = result.codeResult.code;
+                document.getElementById('scanner-result').textContent = `Scanned: ${code}`;
+                document.getElementById('equipmentId').value = code;
+                
+                // Play a success sound or vibrate if available
+                if (navigator.vibrate) {
+                    navigator.vibrate(200);
+                }
+                
+                // Auto close after successful scan
+                setTimeout(() => {
+                    closeScanner();
+                    showSuccess(`Successfully scanned: ${code}`);
+                }, 1000);
+            });
+
+            // Visual feedback for located barcodes
+            Quagga.onProcessed(function(result) {
+                const drawingCtx = Quagga.canvas.ctx.overlay;
+                const drawingCanvas = Quagga.canvas.dom.overlay;
+
+                if (result) {
+                    if (result.boxes) {
+                        drawingCtx.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
+                        result.boxes.filter(function(box) {
+                            return box !== result.box;
+                        }).forEach(function(box) {
+                            Quagga.ImageDebug.drawPath(box, {x: 0, y: 1}, drawingCtx, {color: "green", lineWidth: 2});
+                        });
+                    }
+
+                    if (result.box) {
+                        Quagga.ImageDebug.drawPath(result.box, {x: 0, y: 1}, drawingCtx, {color: "#00F", lineWidth: 2});
+                    }
+
+                    if (result.codeResult && result.codeResult.code) {
+                        Quagga.ImageDebug.drawPath(result.line, {x: 'x', y: 'y'}, drawingCtx, {color: 'red', lineWidth: 3});
+                    }
+                }
+            });
         }
 
         // Simulate scan for demo
@@ -1022,7 +968,7 @@
             const randomId = sampleIds[Math.floor(Math.random() * sampleIds.length)];
             document.getElementById('equipmentId').value = randomId;
             closeScanner();
-            showSuccess(`Simulated scan: ${randomId}`);
+            showSuccess(`Scanned: ${randomId}`);
         }
 
         // Reset functionality
@@ -1044,7 +990,6 @@
                 
                 // Clear data
                 equipment = [];
-                saveData();
                 updateStats();
                 renderEquipmentTable();
                 closeResetModal();
@@ -1090,34 +1035,6 @@
                 }
             }
         });
-
-        // Logout functionality
-        function logout() {
-            isLoggedIn = false;
-            if (useLocalStorage) {
-                localStorage.removeItem('folkFestLoggedIn');
-            }
-            document.getElementById('loginScreen').style.display = 'block';
-            document.getElementById('mainApp').style.display = 'none';
-        }
-
-        // Add keyboard shortcuts
-        document.addEventListener('keydown', function(e) {
-            if (isLoggedIn) {
-                // Ctrl/Cmd + E to focus equipment ID field
-                if ((e.ctrlKey || e.metaKey) && e.key === 'e') {
-                    e.preventDefault();
-                    document.getElementById('equipmentId').focus();
-                }
-                // Ctrl/Cmd + S to export (save) data
-                if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-                    e.preventDefault();
-                    exportData();
-                }
-            }
-        });
     </script>
 </body>
 </html>
-
-        
