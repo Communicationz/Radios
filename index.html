@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Folk Fest Radio Inventory System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            padding: 2rem 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2rem;
+            font-weight: 600;
+        }
+
+        .login-container {
+            max-width: 400px;
+            margin: 100px auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .main-content {
+            display: none;
+        }
+
+        .form-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .form-grid {
+            display: grid;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #2a5298;
+        }
+
+        input, select {
+            padding: 0.75rem;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #2a5298;
+            box-shadow: 0 0 0 3px rgba(42, 82, 152, 0.1);
+        }
+
+        button {
+            background: #2a5298;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background: #1e3c72;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .scanner-btn {
+            background: #87ceeb;
+            color: #1e3c72;
+            margin-left: 0.5rem;
+        }
+
+        .scanner-btn:hover {
+            background: #5f9ea0;
+            color: white;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .view-selector {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .equipment-list {
+            background: white;
+            border-radius: 12px;
+            padding: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .search-box {
+            width: 300px;
+            padding: 0.75rem;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e1e8ed;
+        }
+
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #2a5298;
+            position: sticky;
+            top: 0;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .status-issued {
+            background: #ffeaa7;
+            color: #d68910;
+        }
+
+        .status-returned {
+            background: #55efc4;
+            color: #00b894;
+        }
+
+        .return-btn {
+            background: #00b894;
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        .return-btn:hover {
+            background: #00a087;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .close-modal {
+            float: right;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .close-modal:hover {
+            color: #333;
+        }
+
+        #scanner-container {
+            width: 100%;
+            max-width: 400px;
+            margin: 1rem auto;
+        }
+
+        #scanner-video {
+            width: 100%;
+            border-radius: 8px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2a5298;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.875rem;
+        }
+
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-box {
+                width: 100%;
+            }
+
+            .action-buttons {
+                justify-content: center;
+            }
+
+            table {
+                font-size: 0.875rem;
+            }
+
+            th, td {
+                padding: 0.5rem;
+            }
+        }
+
+        .error-message {
+            background: #ff6b6b;
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .success-message {
+            background: #00b894;
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .session-notice {
+            background: #74b9ff;
+            color: white;
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Folk Fest Radio Inventory System</h1>
+        </div>
+    </header>
+
+    <!-- Login Screen -->
+    <div id="loginScreen" class="container">
+        <div class="login-container">
+            <h2 style="text-align: center; margin-bottom: 2rem; color: #2a5298;">System Login</h2>
+            <div class="form-group">
+                <label for="loginCode">Access Code</label>
+                <input type="text" id="loginCode" placeholder="Enter access code">
+            </div>
+            <div class="form-group" style="margin-top: 1rem;">
+                <label for="loginPassword">Password</label>
+                <input type="password" id="loginPassword" placeholder="Enter password">
+            </div>
+            <button onclick="login()" style="width: 100%; margin-top: 1.5rem;">Login</button>
+            <div id="loginError" class="error-message" style="margin-top: 1rem;"></div>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="mainApp" class="container main-content">
+        <div class="session-notice">
+            <strong>Session Mode:</strong> Data is stored in memory during this session. Use Export CSV to save your data permanently.
+        </div>
+        
+        <div class="error-message" id="errorMessage"></div>
+        <div class="success-message" id="successMessage"></div>
+
+        <!-- Equipment Issue Form -->
+        <div class="form-section fade-in">
+            <h2 style="margin-bottom: 1.5rem; color: #2a5298;">Issue Equipment</h2>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="equipmentId">Equipment ID</label>
+                    <div style="display: flex;">
+                        <input type="text" id="equipmentId" placeholder="Enter or scan ID" required>
+                        <button class="scanner-btn" onclick="openScanner()">📷 Scan</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="committee">Committee</label>
+                    <select id="committee" required>
+                        <option value="">Select Committee</option>
+                        <option value="Production">Production</option>
+                        <option value="Tramcart">Tramcart</option>
+                        <option value="Communicationz">Communicationz</option>
+                        <option value="Groundz">Groundz</option>
+                        <option value="PFFLE">PFFLE</option>
+                        <option value="Safety">Safety</option>
+                        <option value="Camping">Camping</option>
+                        <option value="Security">Security</option>
+                        <option value="Craftz">Craftz</option>
+                        <option value="Parking">Parking</option>
+                        <option value="Admin">Admin</option>
+                        <option value="Gate">Gate</option>
+                        <option value="Hospitality">Hospitality</option>
+                        <option value="Medical">Medical</option>
+                        <option value="Vendors">Vendors</option>
+                        <option value="Volunteers">Volunteers</option>
+                        <option value="Stage Management">Stage Management</option>
+                        <option value="Sound">Sound</option>
+                        <option value="Lighting">Lighting</option>
+                        <option value="Site Ops">Site Ops</option>
+                        <option value="Transportation">Transportation</option>
+                        <option value="Waste Management">Waste Management</option>
+                        <option value="Info Booth">Info Booth</option>
+                        <option value="Kids Area">Kids Area</option>
+                        <option value="Green Team">Green Team</option>
+                        <option value="Accessibility">Accessibility</option>
+                        <option value="Media">Media</option>
+                        <option value="Artist Liaison">Artist Liaison</option>
+                        <option value="Box Office">Box Office</option>
+                        <option value="Merchandise">Merchandise</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="individual">Individual Name</label>
+                    <input type="text" id="individual" placeholder="Enter name" required>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Phone Number (Optional)</label>
+                    <input type="tel" id="phone" placeholder="Enter phone number">
+                </div>
+            </div>
+            <button onclick="issueEquipment()" style="width: 100%;">Issue Equipment</button>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls">
+            <div class="view-selector">
+                <label for="viewSelect">View:</label>
+                <select id="viewSelect" onchange="changeView()">
+                    <option value="all">All Equipment</option>
+                    <option value="missing">Missing Equipment</option>
+                    <option value="history">Full History</option>
+                </select>
+            </div>
+            <div class="action-buttons">
+                <button onclick="exportData()">Export CSV</button>
+                <button onclick="printReport()">Print Report</button>
+                <button onclick="openResetModal()" style="background: #ff6b6b;">Reset System</button>
+            </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="stats" id="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="totalEquipment">0</div>
+                <div class="stat-label">Total Equipment</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="issuedEquipment">0</div>
+                <div class="stat-label">Currently Issued</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="returnedEquipment">0</div>
+                <div class="stat-label">Returned</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="missingEquipment">0</div>
+                <div class="stat-label">Missing</div>
+            </div>
+        </div>
+
+        <!-- Equipment List -->
+        <div class="equipment-list">
+            <input type="text" class="search-box" id="searchBox" placeholder="Search by ID, name, or committee..." onkeyup="filterEquipment()">
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Equipment ID</th>
+                            <th>Committee</th>
+                            <th>Individual</th>
+                            <th>Phone</th>
+                            <th>Status</th>
+                            <th>Issued At</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="equipmentTableBody">
+                        <!-- Dynamic content -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scanner Modal -->
+    <div id="scannerModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeScanner()">&times;</span>
+            <h3 style="margin-bottom: 1rem;">Scan Equipment Code</h3>
+            <div id="scanner-container">
+                <video id="scanner-video"></video>
+                <canvas id="scanner-canvas" style="display: none;"></canvas>
+            </div>
+            <p style="text-align: center; margin-top: 1rem; color: #666;">Position the code within the camera view</p>
+            <button onclick="simulateScan()" style="width: 100%; margin-top: 1rem; background: #87ceeb; color: #1e3c72;">Simulate Scan (Demo)</button>
+        </div>
+    </div>
+
+    <!-- Reset Modal -->
+    <div id="resetModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeResetModal()">&times;</span>
+            <h3 style="margin-bottom: 1rem; color: #ff6b6b;">Reset System</h3>
+            <p style="margin-bottom: 1rem;">This will clear all equipment records. A backup will be automatically created.</p>
+            <div class="form-group">
+                <label for="resetPassword">Enter Password</label>
+                <input type="password" id="resetPassword" placeholder="Enter reset password">
+            </div>
+            <button onclick="resetSystem()" style="background: #ff6b6b; width: 100%; margin-top: 1rem;">Confirm Reset</button>
+        </div>
+    </div>
+
+    <script>
+        // State management - in-memory storage
+        let equipment = [];
+        let currentView = 'all';
+        let scannerStream = null;
+        let isLoggedIn = false;
+
+        // Sample data for demonstration
+        const sampleData = [
+            {
+                id: 'RAD-001',
+                committee: 'Production',
+                individual: 'John Smith',
+                phone: '555-0123',
+                status: 'Issued',
+                timestamp: new Date(Date.now() - 86400000).toISOString(),
+                returnedAt: null
+            },
+            {
+                id: 'RAD-002',
+                committee: 'Security',
+                individual: 'Jane Doe',
+                phone: '555-0124',
+                status: 'Returned',
+                timestamp: new Date(Date.now() - 172800000).toISOString(),
+                returnedAt: new Date(Date.now() - 86400000).toISOString()
+            }
+        ];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load sample data for demonstration
+            equipment = [...sampleData];
+            updateStats();
+            renderEquipmentTable();
+        });
+
+        // Login functionality
+        function login() {
+            const code = document.getElementById('loginCode').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            if (code === 'PFFCO' && password === '2583') {
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('mainApp').style.display = 'block';
+                isLoggedIn = true;
+            } else {
+                const error = document.getElementById('loginError');
+                error.textContent = 'Invalid credentials. Please try again.';
+                error.style.display = 'block';
+            }
+        }
+
+        // Issue equipment
+        function issueEquipment() {
+            const id = document.getElementById('equipmentId').value.trim();
+            const committee = document.getElementById('committee').value;
+            const individual = document.getElementById('individual').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+
+            if (!id || !committee || !individual) {
+                showError('Please fill in all required fields');
+                return;
+            }
+
+            // Check if equipment already exists and is issued
+            const existing = equipment.find(e => e.id === id && e.status === 'Issued');
+            if (existing) {
+                showError('Equipment is already issued. Please return it first.');
+                return;
+            }
+
+            const newRecord = {
+                id,
+                committee,
+                individual,
+                phone,
+                status: 'Issued',
+                timestamp: new Date().toISOString(),
+                returnedAt: null
+            };
+
+            equipment.push(newRecord);
+            updateStats();
+            renderEquipmentTable();
+            clearForm();
+            showSuccess('Equipment issued successfully!');
+        }
+
+        // Return equipment
+        function returnEquipment(id) {
+            const item = equipment.find(e => e.id === id && e.status === 'Issued');
+            if (item) {
+                item.status = 'Returned';
+                item.returnedAt = new Date().toISOString();
+                updateStats();
+                renderEquipmentTable();
+                showSuccess('Equipment returned successfully!');
+            }
+        }
+
+        // Clear form
+        function clearForm() {
+            document.getElementById('equipmentId').value = '';
+            document.getElementById('committee').value = '';
+            document.getElementById('individual').value = '';
+            document.getElementById('phone').value = '';
+        }
+
+        // Update statistics
+        function updateStats() {
+            const total = equipment.length;
+            const issued = equipment.filter(e => e.status === 'Issued').length;
+            const returned = equipment.filter(e => e.status === 'Returned').length;
+
+            document.getElementById('totalEquipment').textContent = total;
+            document.getElementById('issuedEquipment').textContent = issued;
+            document.getElementById('returnedEquipment').textContent = returned;
+            document.getElementById('missingEquipment').textContent = issued;
+        }
+
+        // Render equipment table
+        function renderEquipmentTable() {
+            const tbody = document.getElementById('equipmentTableBody');
+            const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+            
+            let filteredEquipment = equipment;
+
+            // Apply view filter
+            if (currentView === 'missing') {
+                filteredEquipment = equipment.filter(e => e.status === 'Issued');
+            }
+
+            // Apply search filter
+            if (searchTerm) {
+                filteredEquipment = filteredEquipment.filter(e => 
+                    e.id.toLowerCase().includes(searchTerm) ||
+                    e.individual.toLowerCase().includes(searchTerm) ||
+                    e.committee.toLowerCase().includes(searchTerm)
+                );
+            }
+
+            // Sort by timestamp (newest first)
+            filteredEquipment.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+            tbody.innerHTML = filteredEquipment.map(item => `
+                <tr class="fade-in">
+                    <td>${item.id}</td>
+                    <td>${item.committee}</td>
+                    <td>${item.individual}</td>
+                    <td>${item.phone || '-'}</td>
+                    <td><span class="status-badge status-${item.status.toLowerCase()}">${item.status}</span></td>
+                    <td>${new Date(item.timestamp).toLocaleString()}</td>
+                    <td>
+                        ${item.status === 'Issued' ? 
+                            `<button class="return-btn" onclick="returnEquipment('${item.id}')">Return</button>` : 
+                            '-'
+                        }
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Change view
+        function changeView() {
+            currentView = document.getElementById('viewSelect').value;
+            renderEquipmentTable();
+        }
+
+        // Filter equipment
+        function filterEquipment() {
+            renderEquipmentTable();
+        }
+
+        // Export data
+        function exportData() {
+            const csv = [
+                ['Equipment ID', 'Committee', 'Individual', 'Phone', 'Status', 'Issued At', 'Returned At'],
+                ...equipment.map(item => [
+                    item.id,
+                    item.committee,
+                    item.individual,
+                    item.phone || '',
+                    item.status,
+                    new Date(item.timestamp).toLocaleString(),
+                    item.returnedAt ? new Date(item.returnedAt).toLocaleString() : ''
+                ])
+            ].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `folk-fest-equipment-${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showSuccess('Data exported successfully!');
+        }
+
+        // Print report
+        function printReport() {
+            window.print();
+        }
+
+        // Scanner functionality
+        function openScanner() {
+            document.getElementById('scannerModal').style.display = 'flex';
+            startScanner();
+        }
+
+        function closeScanner() {
+            document.getElementById('scannerModal').style.display = 'none';
+            stopScanner();
+        }
+
+        function startScanner() {
+            const video = document.getElementById('scanner-video');
+            
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+                .then(stream => {
+                    scannerStream = stream;
+                    video.srcObject = stream;
+                    video.play();
+                })
+                .catch(err => {
+                    console.error('Camera error:', err);
+                    showError('Camera access not available in this demo. Use the Simulate Scan button or enter ID manually.');
+                });
+        }
+
+        function stopScanner() {
+            if (scannerStream) {
+                scannerStream.getTracks().forEach(track => track.stop());
+                scannerStream = null;
+            }
+        }
+
+        // Simulate scan for demo
+        function simulateScan() {
+            const sampleIds = ['RAD-003', 'RAD-004', 'RAD-005', 'RAD-006'];
+            const randomId = sampleIds[Math.floor(Math.random() * sampleIds.length)];
+            document.getElementById('equipmentId').value = randomId;
+            closeScanner();
+            showSuccess(`Scanned: ${randomId}`);
+        }
+
+        // Reset functionality
+        function openResetModal() {
+            document.getElementById('resetModal').style.display = 'flex';
+        }
+
+        function closeResetModal() {
+            document.getElementById('resetModal').style.display = 'none';
+            document.getElementById('resetPassword').value = '';
+        }
+
+        function resetSystem() {
+            const password = document.getElementById('resetPassword').value;
+            
+            if (password === '2583') {
+                // Create backup before reset
+                exportData();
+                
+                // Clear data
+                equipment = [];
+                updateStats();
+                renderEquipmentTable();
+                closeResetModal();
+                showSuccess('System reset complete. Backup created.');
+            } else {
+                showError('Invalid password');
+            }
+        }
+
+        // Message display
+        function showError(message) {
+            const errorEl = document.getElementById('errorMessage');
+            errorEl.textContent = message;
+            errorEl.style.display = 'block';
+            setTimeout(() => errorEl.style.display = 'none', 5000);
+        }
+
+        function showSuccess(message) {
+            const successEl = document.getElementById('successMessage');
+            successEl.textContent = message;
+            successEl.style.display = 'block';
+            setTimeout(() => successEl.style.display = 'none', 5000);
+        }
+
+        // Modal close on outside click
+        window.onclick = function(event) {
+            if (event.target.className === 'modal') {
+                if (event.target.id === 'scannerModal') {
+                    closeScanner();
+                } else if (event.target.id === 'resetModal') {
+                    closeResetModal();
+                }
+            }
+        }
+
+        // Handle Enter key in login fields
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !isLoggedIn) {
+                const loginCode = document.getElementById('loginCode');
+                const loginPassword = document.getElementById('loginPassword');
+                if (document.activeElement === loginCode || document.activeElement === loginPassword) {
+                    login();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
