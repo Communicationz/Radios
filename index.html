@@ -260,9 +260,31 @@
             position: relative;
         }
 
-        #scanner-video {
+        #interactive {
+            position: relative;
             width: 100%;
-            border-radius: 8px;
+            height: 300px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        #interactive.viewport {
+            position: relative;
+        }
+
+        #interactive.viewport canvas,
+        #interactive.viewport video {
+            width: 100%;
+            height: auto;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        #interactive.viewport canvas.drawingBuffer {
+            position: absolute;
+            top: 0;
+            left: 0;
         }
 
         .stats {
@@ -780,49 +802,102 @@
             initializeScanner();
         }
 
+        function fallbackScanner() {
+            // Basic camera without scanning
+            const video = document.getElementById('scanner-video');
+            
+            navigator.mediaDevices.getUserMedia({ 
+                video: { 
+                    facingMode: 'environment',
+                    width: { ideal: 1280 },
+                    height: { ideal: 720 }
+                } 
+            })
+            .then(stream => {
+                video.srcObject = stream;
+                video.play();
+                
+                // Show manual entry suggestion
+                document.getElementById('scanner-result').textContent = 'Camera active - use manual entry if scan fails';
+            })
+            .catch(err => {
+                console.error('Camera error:', err);
+                showError('Camera not accessible. Please use manual entry or simulate scan.');
+            });
+        }
+
         function closeScanner() {
             document.getElementById('scannerModal').style.display = 'none';
+            
+            // Clean up based on what scanner was used
             if (codeReader) {
                 codeReader.reset();
+                codeReader = null;
             }
+            
+            if (typeof Quagga !== 'undefined' && Quagga.stop) {
+                Quagga.stop();
+                Quagga.offDetected();
+            }
+            
+            // Clean up any Quagga divs
+            const interactive = document.getElementById('interactive');
+            if (interactive) {
+                interactive.remove();
+            }
+            
+            // Stop any video streams
+            const video = document.getElementById('scanner-video');
+            if (video.srcObject) {
+                video.srcObject.getTracks().forEach(track => track.stop());
+                video.srcObject = null;
+            }
+            video.style.display = 'block'; // Reset display
+            
             document.getElementById('scanner-result').textContent = '';
         }
 
         function initializeScanner() {
-            // Try ZXing library first (supports more formats including QR codes)
-            try {
-                codeReader = new ZXing.BrowserMultiFormatReader();
-                
-                // Get available cameras
-                codeReader.listVideoInputDevices()
-                    .then((videoInputDevices) => {
-                        const cameraSelect = document.getElementById('cameraSelect');
-                        cameraSelect.innerHTML = '<option value="">Select Camera</option>';
-                        
-                        if (videoInputDevices.length > 0) {
-                            videoInputDevices.forEach((device, idx) => {
-                                const option = document.createElement('option');
-                                option.value = device.deviceId;
-                                option.text = device.label || `Camera ${idx + 1}`;
-                                cameraSelect.appendChild(option);
-                            });
+            // Check if ZXing is loaded
+            if (typeof ZXing !== 'undefined') {
+                try {
+                    codeReader = new ZXing.BrowserMultiFormatReader();
+                    console.log('ZXing scanner initialized');
+                    
+                    // Get available cameras
+                    codeReader.listVideoInputDevices()
+                        .then((videoInputDevices) => {
+                            const cameraSelect = document.getElementById('cameraSelect');
+                            cameraSelect.innerHTML = '<option value="">Select Camera</option>';
                             
-                            // Select the last camera (usually back camera on mobile)
-                            selectedDeviceId = videoInputDevices[videoInputDevices.length - 1].deviceId;
-                            cameraSelect.value = selectedDeviceId;
-                            
-                            startScanning(selectedDeviceId);
-                        } else {
-                            showError('No cameras found. Please use manual entry.');
-                        }
-                    })
-                    .catch((err) => {
-                        console.error(err);
-                        fallbackScanner();
-                    });
-            } catch (err) {
-                console.error('ZXing not available, using fallback');
-                fallbackScanner();
+                            if (videoInputDevices.length > 0) {
+                                videoInputDevices.forEach((device, idx) => {
+                                    const option = document.createElement('option');
+                                    option.value = device.deviceId;
+                                    option.text = device.label || `Camera ${idx + 1}`;
+                                    cameraSelect.appendChild(option);
+                                });
+                                
+                                // Select the last camera (usually back camera on mobile)
+                                selectedDeviceId = videoInputDevices[videoInputDevices.length - 1].deviceId;
+                                cameraSelect.value = selectedDeviceId;
+                                
+                                startScanning(selectedDeviceId);
+                            } else {
+                                showError('No cameras found. Please use manual entry.');
+                            }
+                        })
+                        .catch((err) => {
+                            console.error('Camera listing error:', err);
+                            useQuaggaScanner();
+                        });
+                } catch (err) {
+                    console.error('ZXing initialization error:', err);
+                    useQuaggaScanner();
+                }
+            } else {
+                console.log('ZXing not loaded, trying Quagga');
+                useQuaggaScanner();
             }
         }
 
@@ -863,28 +938,76 @@
             }
         }
 
-        function fallbackScanner() {
-            // Simplified fallback when ZXing isn't available
-            const video = document.getElementById('scanner-video');
-            
-            navigator.mediaDevices.getUserMedia({ 
-                video: { 
-                    facingMode: 'environment',
-                    width: { ideal: 1280 },
-                    height: { ideal: 720 }
-                } 
-            })
-            .then(stream => {
-                video.srcObject = stream;
-                video.play();
+        function useQuaggaScanner() {
+            // Use Quagga for barcode scanning
+            if (typeof Quagga !== 'undefined') {
+                const video = document.getElementById('scanner-video');
+                video.style.display = 'none'; // Hide video element for Quagga
                 
-                // Show manual entry suggestion
-                document.getElementById('scanner-result').textContent = 'Camera active - use manual entry if scan fails';
-            })
-            .catch(err => {
-                console.error('Camera error:', err);
-                showError('Camera not accessible. Please use manual entry or simulate scan.');
-            });
+                // Create container for Quagga
+                const container = document.getElementById('scanner-container');
+                const quaggaDiv = document.createElement('div');
+                quaggaDiv.id = 'interactive';
+                quaggaDiv.className = 'viewport';
+                quaggaDiv.style.width = '100%';
+                quaggaDiv.style.maxWidth = '400px';
+                container.appendChild(quaggaDiv);
+                
+                Quagga.init({
+                    inputStream: {
+                        name: "Live",
+                        type: "LiveStream",
+                        target: quaggaDiv,
+                        constraints: {
+                            width: 640,
+                            height: 480,
+                            facingMode: "environment"
+                        }
+                    },
+                    decoder: {
+                        readers: [
+                            "code_128_reader",
+                            "ean_reader",
+                            "ean_8_reader",
+                            "code_39_reader",
+                            "code_39_vin_reader",
+                            "codabar_reader",
+                            "upc_reader",
+                            "upc_e_reader",
+                            "i2of5_reader"
+                        ]
+                    },
+                    locate: true
+                }, function(err) {
+                    if (err) {
+                        console.error('Quagga init error:', err);
+                        fallbackScanner();
+                        return;
+                    }
+                    console.log("Quagga initialization succeeded");
+                    Quagga.start();
+                });
+
+                // Handle barcode detection
+                Quagga.onDetected(function(result) {
+                    const code = result.codeResult.code;
+                    console.log('Barcode detected:', code);
+                    document.getElementById('scanner-result').textContent = `Scanned: ${code}`;
+                    document.getElementById('equipmentId').value = code;
+                    
+                    if (navigator.vibrate) {
+                        navigator.vibrate(200);
+                    }
+                    
+                    setTimeout(() => {
+                        closeScanner();
+                        showSuccess(`Successfully scanned: ${code}`);
+                    }, 1000);
+                });
+            } else {
+                console.log('Quagga not loaded, using fallback');
+                fallbackScanner();
+            }
         }
 
         function manualEntry() {
