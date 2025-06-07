@@ -768,53 +768,80 @@
 
         // Scanner functionality
         let scannerInitialized = false;
+        let currentDeviceId = null;
         
         function openScanner() {
             document.getElementById('scannerModal').style.display = 'flex';
-            if (!scannerInitialized) {
-                initializeScanner();
-            } else {
-                Quagga.start();
-            }
+            initializeScanner();
         }
 
         function closeScanner() {
             document.getElementById('scannerModal').style.display = 'none';
             if (scannerInitialized) {
                 Quagga.stop();
+                scannerInitialized = false;
             }
             document.getElementById('scanner-result').textContent = '';
         }
 
         function initializeScanner() {
             // First, enumerate cameras
-            Quagga.CameraAccess.enumerateVideoDevices()
-                .then(function(devices) {
-                    const cameraSelect = document.getElementById('cameraSelect');
-                    cameraSelect.innerHTML = '<option value="">Select Camera</option>';
-                    devices.forEach(function(device, idx) {
-                        const option = document.createElement('option');
-                        option.value = device.deviceId;
-                        option.text = device.label || `Camera ${idx + 1}`;
-                        cameraSelect.appendChild(option);
+            if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
+                navigator.mediaDevices.enumerateDevices()
+                    .then(function(devices) {
+                        const videoDevices = devices.filter(device => device.kind === 'videoinput');
+                        const cameraSelect = document.getElementById('cameraSelect');
+                        cameraSelect.innerHTML = '<option value="">Select Camera</option>';
+                        
+                        videoDevices.forEach(function(device, idx) {
+                            const option = document.createElement('option');
+                            option.value = device.deviceId;
+                            option.text = device.label || `Camera ${idx + 1}`;
+                            cameraSelect.appendChild(option);
+                        });
+                        
+                        if (videoDevices.length > 0) {
+                            // Try to select back camera (usually has 'back' in the label)
+                            let selectedDevice = videoDevices[videoDevices.length - 1];
+                            for (let device of videoDevices) {
+                                if (device.label.toLowerCase().includes('back')) {
+                                    selectedDevice = device;
+                                    break;
+                                }
+                            }
+                            cameraSelect.value = selectedDevice.deviceId;
+                            currentDeviceId = selectedDevice.deviceId;
+                            startScanner(selectedDevice.deviceId);
+                        } else {
+                            showError('No cameras found. Please enter ID manually.');
+                        }
+                    })
+                    .catch(function(err) {
+                        console.error('Camera enumeration error:', err);
+                        showError('Camera access not available. Please enter ID manually or use Simulate Scan.');
                     });
-                    
-                    if (devices.length > 0) {
-                        cameraSelect.value = devices[devices.length - 1].deviceId; // Select back camera if available
-                        startScanner(devices[devices.length - 1].deviceId);
-                    }
-                })
-                .catch(function(err) {
-                    console.error('Camera enumeration error:', err);
-                    showError('Camera access not available. Please enter ID manually or use Simulate Scan.');
-                });
+            } else {
+                showError('Camera API not supported in this browser.');
+            }
         }
 
         function changeCamera() {
             const deviceId = document.getElementById('cameraSelect').value;
-            if (deviceId && scannerInitialized) {
-                Quagga.stop();
-                startScanner(deviceId);
+            if (deviceId && deviceId !== currentDeviceId) {
+                currentDeviceId = deviceId;
+                if (scannerInitialized) {
+                    Quagga.stop();
+                    scannerInitialized = false;
+                    // Clear the canvas
+                    const interactive = document.querySelector('#interactive');
+                    interactive.innerHTML = '<div class="scanner-overlay"></div>';
+                    // Small delay to ensure proper cleanup
+                    setTimeout(() => {
+                        startScanner(deviceId);
+                    }, 100);
+                } else {
+                    startScanner(deviceId);
+                }
             }
         }
 
@@ -825,9 +852,10 @@
                     type: "LiveStream",
                     target: document.querySelector('#interactive'),
                     constraints: {
-                        width: 640,
-                        height: 480,
-                        deviceId: deviceId
+                        width: { min: 640 },
+                        height: { min: 480 },
+                        facingMode: "environment",
+                        deviceId: deviceId ? { exact: deviceId } : undefined
                     }
                 },
                 decoder: {
@@ -841,12 +869,32 @@
                         "upc_reader",
                         "upc_e_reader",
                         "i2of5_reader"
-                    ]
+                    ],
+                    debug: {
+                        drawBoundingBox: true,
+                        showFrequency: false,
+                        drawScanline: true,
+                        showPattern: false
+                    }
                 },
                 locate: true,
                 locator: {
                     halfSample: true,
-                    patchSize: "medium"
+                    patchSize: "medium",
+                    debug: {
+                        showCanvas: false,
+                        showPatches: false,
+                        showFoundPatches: false,
+                        showSkeleton: false,
+                        showLabels: false,
+                        showPatchLabels: false,
+                        showRemainingPatchLabels: false,
+                        boxFromPatches: {
+                            showTransformed: false,
+                            showTransformedBox: false,
+                            showBB: false
+                        }
+                    }
                 }
             };
 
@@ -859,13 +907,27 @@
                 console.log("Scanner initialized successfully");
                 scannerInitialized = true;
                 Quagga.start();
+                
+                // Set up event handlers after successful init
+                setupScannerHandlers();
             });
+        }
+
+        function setupScannerHandlers() {
+            // Remove any existing handlers to prevent duplicates
+            Quagga.offDetected();
+            Quagga.offProcessed();
 
             // Handle successful scans
             Quagga.onDetected(function(result) {
                 const code = result.codeResult.code;
                 document.getElementById('scanner-result').textContent = `Scanned: ${code}`;
                 document.getElementById('equipmentId').value = code;
+                
+                // Play a success sound or vibrate if available
+                if (navigator.vibrate) {
+                    navigator.vibrate(200);
+                }
                 
                 // Auto close after successful scan
                 setTimeout(() => {
