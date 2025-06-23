@@ -388,20 +388,13 @@
             <div class="header-content">
                 <div class="header-left">
                     <svg class="logo" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
-                        <!-- Outer circle -->
                         <circle cx="512" cy="512" r="480" fill="none" stroke="#0033FF" stroke-width="64"/>
-                        <!-- Inner blue circle -->
                         <circle cx="512" cy="512" r="416" fill="#0033FF"/>
-                        <!-- White phone shape -->
                         <path d="M 320 250 Q 320 200 370 200 L 654 200 Q 704 200 704 250 L 704 774 Q 704 824 654 824 L 370 824 Q 320 824 320 774 Z" fill="white"/>
-                        <!-- Blue phone body -->
                         <rect x="370" y="250" width="284" height="524" rx="25" fill="#0033FF"/>
-                        <!-- White screen area -->
                         <rect x="400" y="300" width="224" height="120" fill="white"/>
                         <rect x="400" y="440" width="224" height="40" fill="white"/>
-                        <!-- White rotary dial -->
                         <circle cx="512" cy="600" r="120" fill="none" stroke="white" stroke-width="20"/>
-                        <!-- Dial holes -->
                         <circle cx="512" cy="500" r="15" fill="white"/>
                         <circle cx="582" cy="520" r="15" fill="white"/>
                         <circle cx="612" cy="570" r="15" fill="white"/>
@@ -412,19 +405,16 @@
                         <circle cx="412" cy="630" r="15" fill="white"/>
                         <circle cx="412" cy="570" r="15" fill="white"/>
                         <circle cx="442" cy="520" r="15" fill="white"/>
-                        <!-- Z in center -->
                         <text x="512" y="620" text-anchor="middle" font-family="Arial" font-size="60" font-weight="bold" fill="white">Z</text>
-                        <!-- PFFCO text -->
                         <text x="512" y="900" text-anchor="middle" font-family="Arial" font-size="100" font-weight="bold" fill="white">PFFCO</text>
                     </svg>
                     <h1>Folk Fest Radio Inventory System</h1>
                 </div>
-                <button class="logout-btn" onclick="logout()" style="display: none;" id="logoutBtn">Logout</button>
+                <button class="logout-btn" onclick="x9()" style="display: none;" id="logoutBtn">Logout</button>
             </div>
         </div>
     </header>
 
-    <!-- Login Screen -->
     <div id="loginScreen" class="container">
         <div class="login-container">
             <h2 style="text-align: center; margin-bottom: 2rem; color: #2a5298;">System Login</h2>
@@ -436,17 +426,15 @@
                 <label for="loginPassword">Password</label>
                 <input type="password" id="loginPassword" placeholder="Enter password">
             </div>
-            <button onclick="login()" style="width: 100%; margin-top: 1.5rem;">Login</button>
+            <button onclick="a1()" style="width: 100%; margin-top: 1.5rem;">Login</button>
             <div id="loginError" class="error-message" style="margin-top: 1rem;"></div>
         </div>
     </div>
 
-    <!-- Main Application -->
     <div id="mainApp" class="container main-content">
         <div class="error-message" id="errorMessage"></div>
         <div class="success-message" id="successMessage"></div>
 
-        <!-- Equipment Issue Form -->
         <div class="form-section fade-in">
             <h2 style="margin-bottom: 1.5rem; color: #2a5298;">Issue Equipment</h2>
             <div class="form-grid">
@@ -454,7 +442,7 @@
                     <label for="equipmentId">Equipment ID</label>
                     <div style="display: flex;">
                         <input type="text" id="equipmentId" placeholder="Enter or scan ID" required>
-                        <button class="scanner-btn" onclick="openScanner()">📷 Scan</button>
+                        <button class="scanner-btn" onclick="s1()">📷 Scan</button>
                     </div>
                 </div>
                 <div class="form-group">
@@ -503,27 +491,25 @@
                     <input type="tel" id="phone" placeholder="Enter phone number">
                 </div>
             </div>
-            <button onclick="issueEquipment()" style="width: 100%;">Issue Equipment</button>
+            <button onclick="e1()" style="width: 100%;">Issue Equipment</button>
         </div>
 
-        <!-- Controls -->
         <div class="controls">
             <div class="view-selector">
                 <label for="viewSelect">View:</label>
-                <select id="viewSelect" onchange="changeView()">
+                <select id="viewSelect" onchange="v1()">
                     <option value="all">All Equipment</option>
                     <option value="missing">Missing Equipment</option>
                     <option value="history">Full History</option>
                 </select>
             </div>
             <div class="action-buttons">
-                <button onclick="exportData()">Export CSV</button>
-                <button onclick="printReport()">Print Report</button>
-                <button onclick="openResetModal()" style="background: #ff6b6b;">Reset System</button>
+                <button onclick="p1()">Export CSV</button>
+                <button onclick="p2()">Print Report</button>
+                <button onclick="r1()" style="background: #ff6b6b;">Reset System</button>
             </div>
         </div>
 
-        <!-- Statistics -->
         <div class="stats" id="stats">
             <div class="stat-card">
                 <div class="stat-number" id="totalEquipment">0</div>
@@ -543,9 +529,8 @@
             </div>
         </div>
 
-        <!-- Equipment List -->
         <div class="equipment-list">
-            <input type="text" class="search-box" id="searchBox" placeholder="Search by ID, name, or committee..." onkeyup="filterEquipment()">
+            <input type="text" class="search-box" id="searchBox" placeholder="Search by ID, name, or committee..." onkeyup="f1()">
             <div style="overflow-x: auto;">
                 <table>
                     <thead>
@@ -560,17 +545,15 @@
                         </tr>
                     </thead>
                     <tbody id="equipmentTableBody">
-                        <!-- Dynamic content -->
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <!-- Scanner Modal -->
     <div id="scannerModal" class="modal">
         <div class="modal-content">
-            <span class="close-modal" onclick="closeScanner()">&times;</span>
+            <span class="close-modal" onclick="s2()">&times;</span>
             <h3 style="margin-bottom: 1rem;">Scan Equipment Barcode</h3>
             <div id="scanner-container">
                 <div id="reader" style="width: 100%; max-width: 400px; margin: 0 auto;"></div>
@@ -578,117 +561,185 @@
             </div>
             <p style="text-align: center; margin-top: 1rem; color: #666;">Position the barcode within the camera view</p>
             <div style="text-align: center; margin-top: 1rem;">
-                <button onclick="simulateScan()" style="background: #87ceeb; color: #1e3c72; margin-right: 0.5rem;">Simulate Scan (Demo)</button>
-                <button onclick="manualEntry()" style="background: #95a5a6; color: white;">Manual Entry</button>
+                <button onclick="s3()" style="background: #87ceeb; color: #1e3c72; margin-right: 0.5rem;">Simulate Scan (Demo)</button>
+                <button onclick="s4()" style="background: #95a5a6; color: white;">Manual Entry</button>
             </div>
         </div>
     </div>
 
-    <!-- Reset Modal -->
     <div id="resetModal" class="modal">
         <div class="modal-content">
-            <span class="close-modal" onclick="closeResetModal()">&times;</span>
+            <span class="close-modal" onclick="r2()">&times;</span>
             <h3 style="margin-bottom: 1rem; color: #ff6b6b;">Reset System</h3>
             <p style="margin-bottom: 1rem;">This will clear all equipment records. A backup will be automatically created.</p>
             <div class="form-group">
                 <label for="resetPassword">Enter Password</label>
                 <input type="password" id="resetPassword" placeholder="Enter reset password">
             </div>
-            <button onclick="resetSystem()" style="background: #ff6b6b; width: 100%; margin-top: 1rem;">Confirm Reset</button>
+            <button onclick="r3()" style="background: #ff6b6b; width: 100%; margin-top: 1rem;">Confirm Reset</button>
         </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <script src="https://unpkg.com/html5-qrcode"></script>
     <script>
-        // State management
-        let equipment = [];
-        let currentView = 'all';
-        let isLoggedIn = false;
-        let codeReader = null;
-        let selectedDeviceId = null;
-        let useLocalStorage = true;
+        const k = []; // equipment array
+        let cv = 'all'; // currentView
+        let lg = false; // isLoggedIn
+        let cr = null; // codeReader
+        let sd = null; // selectedDeviceId
+        let ls = true; // useLocalStorage
 
-        // Check if localStorage is available
+        // Obfuscated configuration
+        const cfg = {
+            h1: 'NjljNzM3YjE1MjM5ZjE1NTUxNTQzNjM2YzIxNjAzZjQzMGQzZWJhNGVhZDI3NDkwYmUyYjU2ZGVhNWYyZmU1Mw==', // PFFCO hash
+            h2: 'OTBjNDM2ZGU3Mjg1NjE5Y2ZhNGY3NzM5MTgyMzMzOTcxMGY5MDdiODBjNWZmMzY1MDFkZGJjNzU4NDZmZjkyMw==', // 2583 hash
+            h3: 'OTBjNDM2ZGU3Mjg1NjE5Y2ZhNGY3NzM5MTgyMzMzOTcxMGY5MDdiODBjNWZmMzY1MDFkZGJjNzU4NDZmZjkyMw==', // reset hash
+            s: 'RmFsa0ZlUzJjRAQ0UmFkaWe*', // salt (base64)
+            ma: 5, // maxAttempts
+            ld: 300000, // lockoutDuration
+            at: 0, // attempts
+            lu: null, // lockedUntil
+            sd: 8 * 60 * 60 * 1000, // sessionDuration
+            st: null // sessionToken
+        };
+
+        // String obfuscation helper
+        const ds = (arr) => String.fromCharCode(...arr); // decodeString
+
+        // Obfuscated strings
+        const str = {
+            ie: [73,110,118,97,108,105,100,32,99,114,101,100,101,110,116,105,97,108,115], // Invalid credentials
+            sm: [76,111,103,105,110,32,115,117,99,99,101,115,115,102,117,108], // Login successful
+            af: [80,108,101,97,115,101,32,102,105,108,108,32,105,110,32,97,108,108,32,114,101,113,117,105,114,101,100,32,102,105,101,108,100,115], // Please fill in all required fields
+            ae: [69,113,117,105,112,109,101,110,116,32,105,115,32,97,108,114,101,97,100,121,32,105,115,115,117,101,100], // Equipment is already issued
+            es: [69,113,117,105,112,109,101,110,116,32,105,115,115,117,101,100,32,115,117,99,99,101,115,115,102,117,108,108,121], // Equipment issued successfully
+            rs: [69,113,117,105,112,109,101,110,116,32,114,101,116,117,114,110,101,100,32,115,117,99,99,101,115,115,102,117,108,108,121], // Equipment returned successfully
+            de: [68,97,116,97,32,101,120,112,111,114,116,101,100,32,115,117,99,99,101,115,115,102,117,108,108,121], // Data exported successfully
+            sr: [83,121,115,116,101,109,32,114,101,115,101,116,32,99,111,109,112,108,101,116,101], // System reset complete
+            ip: [73,110,118,97,108,105,100,32,112,97,115,115,119,111,114,100], // Invalid password
+            la: [84,111,111,32,109,97,110,121,32,97,116,116,101,109,112,116,115], // Too many attempts
+            ss: [83,117,99,99,101,115,115,102,117,108,108,121,32,115,99,97,110,110,101,100] // Successfully scanned
+        };
+
+        // Hash function with salt
+        const h = (input) => {
+            const salt = atob(cfg.s);
+            return btoa(CryptoJS.SHA256(input + salt).toString());
+        };
+
+        // Check localStorage availability
         try {
             localStorage.setItem('test', 'test');
             localStorage.removeItem('test');
         } catch (e) {
-            useLocalStorage = false;
-            console.log('localStorage not available, using in-memory storage');
+            ls = false;
         }
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
-            loadData();
-            updateStats();
-            renderEquipmentTable();
+            ld(); // loadData
+            us(); // updateStats
+            rt(); // renderTable
         });
 
-        // Login functionality
-        function login() {
-            const code = document.getElementById('loginCode').value;
-            const password = document.getElementById('loginPassword').value;
+        // Authentication
+        function a1() { // login
+            if (cfg.lu && Date.now() < cfg.lu) {
+                se(ds(str.la));
+                return;
+            }
+
+            const c = document.getElementById('loginCode').value;
+            const p = document.getElementById('loginPassword').value;
             
-            if (code === 'PFFCO' && password === '2583') {
+            if (h(c) === cfg.h1 && h(p) === cfg.h2) {
                 document.getElementById('loginScreen').style.display = 'none';
                 document.getElementById('mainApp').style.display = 'block';
                 document.getElementById('logoutBtn').style.display = 'block';
-                isLoggedIn = true;
-                if (useLocalStorage) {
-                    localStorage.setItem('folkFestLoggedIn', 'true');
+                lg = true;
+                cfg.st = gs(); // generateSessionToken
+                cfg.at = 0;
+                cfg.lu = null;
+                if (ls) {
+                    localStorage.setItem('ffls', cfg.st); // folkFestLoggedIn
+                    localStorage.setItem('ffts', Date.now().toString()); // session timestamp
                 }
+                ss(ds(str.sm));
             } else {
+                cfg.at++;
+                if (cfg.at >= cfg.ma) {
+                    cfg.lu = Date.now() + cfg.ld;
+                }
                 const error = document.getElementById('loginError');
-                error.textContent = 'Invalid credentials. Please try again.';
+                error.textContent = ds(str.ie);
                 error.style.display = 'block';
             }
         }
 
-        // Check login status
-        if (useLocalStorage && localStorage.getItem('folkFestLoggedIn') === 'true') {
+        // Generate session token
+        function gs() {
+            return btoa(Date.now() + Math.random().toString(36));
+        }
+
+        // Check session validity
+        function cs() { // checkSession
+            if (!ls) return lg;
+            const token = localStorage.getItem('ffls');
+            const timestamp = localStorage.getItem('ffts');
+            if (token && timestamp) {
+                const sessionAge = Date.now() - parseInt(timestamp);
+                if (sessionAge < cfg.sd) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        // Check login status on load
+        if (cs()) {
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('mainApp').style.display = 'block';
             document.getElementById('logoutBtn').style.display = 'block';
-            isLoggedIn = true;
+            lg = true;
         }
 
-        // Load data
-        function loadData() {
-            if (useLocalStorage) {
-                const stored = localStorage.getItem('folkFestEquipment');
+        // Data management
+        function ld() { // loadData
+            if (ls) {
+                const stored = localStorage.getItem('ffe'); // folkFestEquipment
                 if (stored) {
-                    equipment = JSON.parse(stored);
+                    k.length = 0;
+                    k.push(...JSON.parse(stored));
                 }
             }
         }
 
-        // Save data
-        function saveData() {
-            if (useLocalStorage) {
-                localStorage.setItem('folkFestEquipment', JSON.stringify(equipment));
+        function sd() { // saveData
+            if (ls) {
+                localStorage.setItem('ffe', JSON.stringify(k));
             }
         }
 
-        // Issue equipment
-        function issueEquipment() {
+        // Equipment operations
+        function e1() { // issueEquipment
             const id = document.getElementById('equipmentId').value.trim();
             const committee = document.getElementById('committee').value;
             const individual = document.getElementById('individual').value.trim();
             const phone = document.getElementById('phone').value.trim();
 
             if (!id || !committee || !individual) {
-                showError('Please fill in all required fields');
+                se(ds(str.af));
                 return;
             }
 
-            // Check if equipment already exists and is issued
-            const existing = equipment.find(e => e.id === id && e.status === 'Issued');
-            if (existing) {
-                showError('Equipment is already issued. Please return it first.');
+            const ex = k.find(e => e.id === id && e.status === 'Issued');
+            if (ex) {
+                se(ds(str.ae));
                 return;
             }
 
-            const newRecord = {
+            const nr = {
                 id,
                 committee,
                 individual,
@@ -698,455 +749,38 @@
                 returnedAt: null
             };
 
-            equipment.push(newRecord);
-            saveData();
-            updateStats();
-            renderEquipmentTable();
-            clearForm();
-            showSuccess('Equipment issued successfully!');
+            k.push(nr);
+            sd();
+            us();
+            rt();
+            cf(); // clearForm
+            ss(ds(str.es));
         }
 
-        // Return equipment
-        function returnEquipment(id) {
-            const item = equipment.find(e => e.id === id && e.status === 'Issued');
+        function e2(id) { // returnEquipment
+            const item = k.find(e => e.id === id && e.status === 'Issued');
             if (item) {
                 item.status = 'Returned';
                 item.returnedAt = new Date().toISOString();
-                saveData();
-                updateStats();
-                renderEquipmentTable();
-                showSuccess('Equipment returned successfully!');
+                sd();
+                us();
+                rt();
+                ss(ds(str.rs));
             }
         }
 
-        // Clear form
-        function clearForm() {
+        function cf() { // clearForm
             document.getElementById('equipmentId').value = '';
             document.getElementById('committee').value = '';
             document.getElementById('individual').value = '';
             document.getElementById('phone').value = '';
         }
 
-        // Update statistics
-        function updateStats() {
-            const total = equipment.length;
-            const issued = equipment.filter(e => e.status === 'Issued').length;
-            const returned = equipment.filter(e => e.status === 'Returned').length;
+        // Statistics and rendering
+        function us() { // updateStats
+            const total = k.length;
+            const issued = k.filter(e => e.status === 'Issued').length;
+            const returned = k.filter(e => e.status === 'Returned').length;
 
             document.getElementById('totalEquipment').textContent = total;
-            document.getElementById('issuedEquipment').textContent = issued;
-            document.getElementById('returnedEquipment').textContent = returned;
-            document.getElementById('missingEquipment').textContent = issued;
-        }
-
-        // Render equipment table
-        function renderEquipmentTable() {
-            const tbody = document.getElementById('equipmentTableBody');
-            const searchTerm = document.getElementById('searchBox').value.toLowerCase();
-            
-            let filteredEquipment = equipment;
-
-            // Apply view filter
-            if (currentView === 'missing') {
-                filteredEquipment = equipment.filter(e => e.status === 'Issued');
-            }
-
-            // Apply search filter
-            if (searchTerm) {
-                filteredEquipment = filteredEquipment.filter(e => 
-                    e.id.toLowerCase().includes(searchTerm) ||
-                    e.individual.toLowerCase().includes(searchTerm) ||
-                    e.committee.toLowerCase().includes(searchTerm)
-                );
-            }
-
-            // Sort by timestamp (newest first)
-            filteredEquipment.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-
-            tbody.innerHTML = filteredEquipment.map(item => `
-                <tr class="fade-in">
-                    <td>${item.id}</td>
-                    <td>${item.committee}</td>
-                    <td>${item.individual}</td>
-                    <td>${item.phone || '-'}</td>
-                    <td><span class="status-badge status-${item.status.toLowerCase()}">${item.status}</span></td>
-                    <td>${new Date(item.timestamp).toLocaleString()}</td>
-                    <td>
-                        ${item.status === 'Issued' ? 
-                            `<button class="return-btn" onclick="returnEquipment('${item.id}')">Return</button>` : 
-                            '-'
-                        }
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        // Change view
-        function changeView() {
-            currentView = document.getElementById('viewSelect').value;
-            renderEquipmentTable();
-        }
-
-        // Filter equipment
-        function filterEquipment() {
-            renderEquipmentTable();
-        }
-
-        // Export data
-        function exportData() {
-            const csv = [
-                ['Equipment ID', 'Committee', 'Individual', 'Phone', 'Status', 'Issued At', 'Returned At'],
-                ...equipment.map(item => [
-                    item.id,
-                    item.committee,
-                    item.individual,
-                    item.phone || '',
-                    item.status,
-                    new Date(item.timestamp).toLocaleString(),
-                    item.returnedAt ? new Date(item.returnedAt).toLocaleString() : ''
-                ])
-            ].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
-
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `folk-fest-equipment-${new Date().toISOString().split('T')[0]}.csv`;
-            a.click();
-            URL.revokeObjectURL(url);
-            showSuccess('Data exported successfully!');
-        }
-
-        // Print report
-        function printReport() {
-            window.print();
-        }
-
-        // Scanner functionality
-        function openScanner() {
-            document.getElementById('scannerModal').style.display = 'flex';
-            initializeScanner();
-        }
-
-        function fallbackScanner() {
-            // Basic camera without scanning
-            const video = document.getElementById('scanner-video');
-            
-            navigator.mediaDevices.getUserMedia({ 
-                video: { 
-                    facingMode: 'environment',
-                    width: { ideal: 1280 },
-                    height: { ideal: 720 }
-                } 
-            })
-            .then(stream => {
-                video.srcObject = stream;
-                video.play();
-                
-                // Show manual entry suggestion
-                document.getElementById('scanner-result').textContent = 'Camera active - use manual entry if scan fails';
-            })
-            .catch(err => {
-                console.error('Camera error:', err);
-                showError('Camera not accessible. Please use manual entry or simulate scan.');
-            });
-        }
-
-        function closeScanner() {
-            document.getElementById('scannerModal').style.display = 'none';
-            
-            // Clean up based on what scanner was used
-            if (codeReader) {
-                codeReader.reset();
-                codeReader = null;
-            }
-            
-            if (typeof Quagga !== 'undefined' && Quagga.stop) {
-                Quagga.stop();
-                Quagga.offDetected();
-            }
-            
-            // Clean up any Quagga divs
-            const interactive = document.getElementById('interactive');
-            if (interactive) {
-                interactive.remove();
-            }
-            
-            // Stop any video streams
-            const video = document.getElementById('scanner-video');
-            if (video.srcObject) {
-                video.srcObject.getTracks().forEach(track => track.stop());
-                video.srcObject = null;
-            }
-            video.style.display = 'block'; // Reset display
-            
-            document.getElementById('scanner-result').textContent = '';
-        }
-
-        function initializeScanner() {
-            // Check if ZXing is loaded
-            if (typeof ZXing !== 'undefined') {
-                try {
-                    codeReader = new ZXing.BrowserMultiFormatReader();
-                    console.log('ZXing scanner initialized');
-                    
-                    // Get available cameras
-                    codeReader.listVideoInputDevices()
-                        .then((videoInputDevices) => {
-                            const cameraSelect = document.getElementById('cameraSelect');
-                            cameraSelect.innerHTML = '<option value="">Select Camera</option>';
-                            
-                            if (videoInputDevices.length > 0) {
-                                videoInputDevices.forEach((device, idx) => {
-                                    const option = document.createElement('option');
-                                    option.value = device.deviceId;
-                                    option.text = device.label || `Camera ${idx + 1}`;
-                                    cameraSelect.appendChild(option);
-                                });
-                                
-                                // Select the last camera (usually back camera on mobile)
-                                selectedDeviceId = videoInputDevices[videoInputDevices.length - 1].deviceId;
-                                cameraSelect.value = selectedDeviceId;
-                                
-                                startScanning(selectedDeviceId);
-                            } else {
-                                showError('No cameras found. Please use manual entry.');
-                            }
-                        })
-                        .catch((err) => {
-                            console.error('Camera listing error:', err);
-                            useQuaggaScanner();
-                        });
-                } catch (err) {
-                    console.error('ZXing initialization error:', err);
-                    useQuaggaScanner();
-                }
-            } else {
-                console.log('ZXing not loaded, trying Quagga');
-                useQuaggaScanner();
-            }
-        }
-
-        function startScanning(deviceId) {
-            if (!codeReader) return;
-            
-            codeReader.decodeFromVideoDevice(deviceId, 'scanner-video', (result, err) => {
-                if (result) {
-                    const code = result.text;
-                    document.getElementById('scanner-result').textContent = `Scanned: ${code}`;
-                    document.getElementById('equipmentId').value = code;
-                    
-                    // Feedback
-                    if (navigator.vibrate) {
-                        navigator.vibrate(200);
-                    }
-                    
-                    // Auto close
-                    setTimeout(() => {
-                        closeScanner();
-                        showSuccess(`Successfully scanned: ${code}`);
-                    }, 1000);
-                }
-                if (err && !(err instanceof ZXing.NotFoundException)) {
-                    console.error(err);
-                }
-            });
-        }
-
-        function changeCamera() {
-            const deviceId = document.getElementById('cameraSelect').value;
-            if (deviceId && deviceId !== selectedDeviceId) {
-                selectedDeviceId = deviceId;
-                if (codeReader) {
-                    codeReader.reset();
-                    startScanning(deviceId);
-                }
-            }
-        }
-
-        function useQuaggaScanner() {
-            // Use Quagga for barcode scanning
-            if (typeof Quagga !== 'undefined') {
-                const video = document.getElementById('scanner-video');
-                video.style.display = 'none'; // Hide video element for Quagga
-                
-                // Create container for Quagga
-                const container = document.getElementById('scanner-container');
-                const quaggaDiv = document.createElement('div');
-                quaggaDiv.id = 'interactive';
-                quaggaDiv.className = 'viewport';
-                quaggaDiv.style.width = '100%';
-                quaggaDiv.style.maxWidth = '400px';
-                container.appendChild(quaggaDiv);
-                
-                Quagga.init({
-                    inputStream: {
-                        name: "Live",
-                        type: "LiveStream",
-                        target: quaggaDiv,
-                        constraints: {
-                            width: 640,
-                            height: 480,
-                            facingMode: "environment"
-                        }
-                    },
-                    decoder: {
-                        readers: [
-                            "code_128_reader",
-                            "ean_reader",
-                            "ean_8_reader",
-                            "code_39_reader",
-                            "code_39_vin_reader",
-                            "codabar_reader",
-                            "upc_reader",
-                            "upc_e_reader",
-                            "i2of5_reader"
-                        ]
-                    },
-                    locate: true
-                }, function(err) {
-                    if (err) {
-                        console.error('Quagga init error:', err);
-                        fallbackScanner();
-                        return;
-                    }
-                    console.log("Quagga initialization succeeded");
-                    Quagga.start();
-                });
-
-                // Handle barcode detection
-                Quagga.onDetected(function(result) {
-                    const code = result.codeResult.code;
-                    console.log('Barcode detected:', code);
-                    document.getElementById('scanner-result').textContent = `Scanned: ${code}`;
-                    document.getElementById('equipmentId').value = code;
-                    
-                    if (navigator.vibrate) {
-                        navigator.vibrate(200);
-                    }
-                    
-                    setTimeout(() => {
-                        closeScanner();
-                        showSuccess(`Successfully scanned: ${code}`);
-                    }, 1000);
-                });
-            } else {
-                console.log('Quagga not loaded, using fallback');
-                fallbackScanner();
-            }
-        }
-
-        function manualEntry() {
-            closeScanner();
-            document.getElementById('equipmentId').focus();
-        }
-
-        // Simulate scan for demo
-        function simulateScan() {
-            const sampleIds = ['RAD-003', 'RAD-004', 'RAD-005', 'RAD-006'];
-            const randomId = sampleIds[Math.floor(Math.random() * sampleIds.length)];
-            document.getElementById('equipmentId').value = randomId;
-            closeScanner();
-            showSuccess(`Simulated scan: ${randomId}`);
-        }
-
-        // Reset functionality
-        function openResetModal() {
-            document.getElementById('resetModal').style.display = 'flex';
-        }
-
-        function closeResetModal() {
-            document.getElementById('resetModal').style.display = 'none';
-            document.getElementById('resetPassword').value = '';
-        }
-
-        function resetSystem() {
-            const password = document.getElementById('resetPassword').value;
-            
-            if (password === '2583') {
-                // Create backup before reset
-                exportData();
-                
-                // Clear data
-                equipment = [];
-                saveData();
-                updateStats();
-                renderEquipmentTable();
-                closeResetModal();
-                showSuccess('System reset complete. Backup created.');
-            } else {
-                showError('Invalid password');
-            }
-        }
-
-        // Message display
-        function showError(message) {
-            const errorEl = document.getElementById('errorMessage');
-            errorEl.textContent = message;
-            errorEl.style.display = 'block';
-            setTimeout(() => errorEl.style.display = 'none', 5000);
-        }
-
-        function showSuccess(message) {
-            const successEl = document.getElementById('successMessage');
-            successEl.textContent = message;
-            successEl.style.display = 'block';
-            setTimeout(() => successEl.style.display = 'none', 5000);
-        }
-
-        // Modal close on outside click
-        window.onclick = function(event) {
-            if (event.target.className === 'modal') {
-                if (event.target.id === 'scannerModal') {
-                    closeScanner();
-                } else if (event.target.id === 'resetModal') {
-                    closeResetModal();
-                }
-            }
-        }
-
-        // Handle Enter key in login fields
-        document.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter' && !isLoggedIn) {
-                const loginCode = document.getElementById('loginCode');
-                const loginPassword = document.getElementById('loginPassword');
-                if (document.activeElement === loginCode || document.activeElement === loginPassword) {
-                    login();
-                }
-            }
-        });
-
-        // Logout functionality
-        function logout() {
-            isLoggedIn = false;
-            if (useLocalStorage) {
-                localStorage.removeItem('folkFestLoggedIn');
-            }
-            document.getElementById('loginScreen').style.display = 'block';
-            document.getElementById('mainApp').style.display = 'none';
-            document.getElementById('logoutBtn').style.display = 'none';
-            // Clear login fields
-            document.getElementById('loginCode').value = '';
-            document.getElementById('loginPassword').value = '';
-        }
-
-        // Add keyboard shortcuts
-        document.addEventListener('keydown', function(e) {
-            if (isLoggedIn) {
-                // Ctrl/Cmd + E to focus equipment ID field
-                if ((e.ctrlKey || e.metaKey) && e.key === 'e') {
-                    e.preventDefault();
-                    document.getElementById('equipmentId').focus();
-                }
-                // Ctrl/Cmd + S to export (save) data
-                if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-                    e.preventDefault();
-                    exportData();
-                }
-            }
-        });
-    </script>
-</body>
-</html>
-
-        
+            document.
