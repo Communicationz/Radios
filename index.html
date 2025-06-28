@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Folk Fest Radio Inventory System</title>
+    <title>PFF Radio Equipment Tracker</title>
     <style>
         * {
             margin: 0;
@@ -12,775 +12,799 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: #f0f4f8;
-            color: #333;
-            line-height: 1.6;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
         }
 
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
         }
 
-        header {
-            background: white;
-            color: #2a5298;
-            padding: 0.5rem 0;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            margin-bottom: 2rem;
-            border-bottom: 2px solid #2a5298;
-        }
-
-        .header-content {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 1rem;
-        }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .logout-btn {
-            background: #ff6b6b;
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
             color: white;
-            padding: 0.5rem 1rem;
-            font-size: 0.9rem;
+            padding: 30px;
+            text-align: center;
         }
 
-        .logout-btn:hover {
-            background: #ff5252;
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
 
-        .logo {
-            width: 40px;
-            height: 40px;
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
         }
 
-        h1 {
-            font-size: 1.25rem;
-            font-weight: 600;
-        }
-
-        .login-container {
-            max-width: 400px;
-            margin: 100px auto;
+        .login-section {
+            padding: 40px;
+            text-align: center;
             background: white;
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
         .main-content {
             display: none;
+            padding: 30px;
         }
 
-        .form-section {
-            background: white;
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            margin-bottom: 2rem;
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
-        .form-grid {
-            display: grid;
-            gap: 1rem;
-            margin-bottom: 1rem;
+        .tab {
+            flex: 1;
+            padding: 15px 20px;
+            cursor: pointer;
+            background: #e9ecef;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .tab:hover {
+            background: #dee2e6;
+            transform: translateY(-2px);
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .form-group {
-            display: flex;
-            flex-direction: column;
+            margin-bottom: 20px;
         }
 
         label {
+            display: block;
+            margin-bottom: 8px;
             font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: #2a5298;
+            color: #333;
         }
 
-        input, select {
-            padding: 0.75rem;
-            border: 2px solid #e1e8ed;
+        input, select, button {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
             border-radius: 8px;
-            font-size: 1rem;
+            font-size: 16px;
             transition: all 0.3s ease;
         }
 
         input:focus, select:focus {
             outline: none;
-            border-color: #2a5298;
-            box-shadow: 0 0 0 3px rgba(42, 82, 152, 0.1);
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
         button {
-            background: #2a5298;
+            background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
             border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
             cursor: pointer;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
             transition: all 0.3s ease;
         }
 
         button:hover {
-            background: #1e3c72;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
         }
 
         button:active {
             transform: translateY(0);
         }
 
-        .scanner-btn {
-            background: #87ceeb;
-            color: #1e3c72;
-            margin-left: 0.5rem;
-        }
-
-        .scanner-btn:hover {
-            background: #5f9ea0;
-            color: white;
-        }
-
-        .controls {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-
-        .view-selector {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 0.5rem;
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
         }
 
         .equipment-list {
-            background: white;
-            border-radius: 12px;
-            padding: 1rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
         }
 
-        .search-box {
-            width: 300px;
-            padding: 0.75rem;
-            border: 2px solid #e1e8ed;
+        .equipment-item {
+            background: white;
+            padding: 15px;
+            margin-bottom: 15px;
             border-radius: 8px;
-            margin-bottom: 1rem;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th, td {
-            padding: 1rem;
-            text-align: left;
-            border-bottom: 1px solid #e1e8ed;
-        }
-
-        th {
-            background: #f8f9fa;
-            font-weight: 600;
-            color: #2a5298;
-            position: sticky;
-            top: 0;
-        }
-
-        tr:hover {
-            background: #f8f9fa;
-        }
-
-        .status-badge {
-            padding: 0.25rem 0.75rem;
-            border-radius: 999px;
-            font-size: 0.875rem;
-            font-weight: 600;
-        }
-
-        .status-issued {
-            background: #ffeaa7;
-            color: #d68910;
-        }
-
-        .status-returned {
-            background: #55efc4;
-            color: #00b894;
-        }
-
-        .return-btn {
-            background: #00b894;
-            padding: 0.5rem 1rem;
-            font-size: 0.875rem;
-        }
-
-        .return-btn:hover {
-            background: #00a087;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
+            transition: all 0.3s ease;
         }
 
-        .modal-content {
-            background: white;
-            padding: 2rem;
-            border-radius: 12px;
-            max-width: 500px;
-            width: 90%;
-            max-height: 90vh;
-            overflow-y: auto;
+        .equipment-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
         }
 
-        .close-modal {
-            float: right;
-            font-size: 1.5rem;
-            cursor: pointer;
+        .equipment-info {
+            flex: 1;
+        }
+
+        .equipment-type {
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 1.1em;
+        }
+
+        .equipment-details {
             color: #666;
+            margin-top: 5px;
         }
 
-        .close-modal:hover {
-            color: #333;
+        .check-in-btn {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
         }
 
-        #scanner-container {
-            width: 100%;
-            max-width: 400px;
-            margin: 1rem auto;
-            position: relative;
+        .check-in-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
         }
 
-        #interactive {
-            position: relative;
-            width: 100%;
-            height: 300px;
-            max-width: 400px;
-            margin: 0 auto;
+        .report-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
         }
 
-        #interactive.viewport {
-            position: relative;
+        .report-filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
         }
 
-        #interactive.viewport canvas,
-        #interactive.viewport video {
-            width: 100%;
-            height: auto;
-            position: absolute;
-            top: 0;
-            left: 0;
+        .report-filters select, .report-filters button {
+            flex: 1;
+            min-width: 150px;
         }
 
-        #interactive.viewport canvas.drawingBuffer {
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
-
-        .stats {
+        .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-bottom: 2rem;
+            gap: 20px;
+            margin-bottom: 30px;
         }
 
         .stat-card {
             background: white;
-            padding: 1.5rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 20px;
+            border-radius: 10px;
             text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
         }
 
         .stat-number {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #2a5298;
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
         }
 
         .stat-label {
             color: #666;
-            font-size: 0.875rem;
+            font-weight: 600;
         }
 
-        @media (max-width: 768px) {
-            .controls {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .search-box {
-                width: 100%;
-            }
-
-            .action-buttons {
-                justify-content: center;
-            }
-
-            table {
-                font-size: 0.875rem;
-            }
-
-            th, td {
-                padding: 0.5rem;
-            }
+        .no-equipment {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            padding: 40px;
         }
 
-        .error-message {
-            background: #ff6b6b;
-            color: white;
-            padding: 1rem;
+        .success-message, .error-message {
+            padding: 15px;
             border-radius: 8px;
-            margin-bottom: 1rem;
-            display: none;
+            margin-bottom: 20px;
+            font-weight: 600;
         }
 
         .success-message {
-            background: #00b894;
-            color: white;
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            display: none;
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
         }
 
-        .fade-in {
-            animation: fadeIn 0.3s ease-out;
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .report-filters {
+                flex-direction: column;
+            }
+            
+            .equipment-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
         }
     </style>
 </head>
 <body>
-    <header>
-        <div class="container">
-            <div class="header-content">
-                <div class="header-left">
-                    <svg class="logo" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="512" cy="512" r="480" fill="none" stroke="#0033FF" stroke-width="64"/>
-                        <circle cx="512" cy="512" r="416" fill="#0033FF"/>
-                        <path d="M 320 250 Q 320 200 370 200 L 654 200 Q 704 200 704 250 L 704 774 Q 704 824 654 824 L 370 824 Q 320 824 320 774 Z" fill="white"/>
-                        <rect x="370" y="250" width="284" height="524" rx="25" fill="#0033FF"/>
-                        <rect x="400" y="300" width="224" height="120" fill="white"/>
-                        <rect x="400" y="440" width="224" height="40" fill="white"/>
-                        <circle cx="512" cy="600" r="120" fill="none" stroke="white" stroke-width="20"/>
-                        <circle cx="512" cy="500" r="15" fill="white"/>
-                        <circle cx="582" cy="520" r="15" fill="white"/>
-                        <circle cx="612" cy="570" r="15" fill="white"/>
-                        <circle cx="612" cy="630" r="15" fill="white"/>
-                        <circle cx="582" cy="680" r="15" fill="white"/>
-                        <circle cx="512" cy="700" r="15" fill="white"/>
-                        <circle cx="442" cy="680" r="15" fill="white"/>
-                        <circle cx="412" cy="630" r="15" fill="white"/>
-                        <circle cx="412" cy="570" r="15" fill="white"/>
-                        <circle cx="442" cy="520" r="15" fill="white"/>
-                        <text x="512" y="620" text-anchor="middle" font-family="Arial" font-size="60" font-weight="bold" fill="white">Z</text>
-                        <text x="512" y="900" text-anchor="middle" font-family="Arial" font-size="100" font-weight="bold" fill="white">PFFCO</text>
-                    </svg>
-                    <h1>Folk Fest Radio Inventory System</h1>
-                </div>
-                <button class="logout-btn" onclick="x9()" style="display: none;" id="logoutBtn">Logout</button>
-            </div>
+    <div class="container">
+        <div class="header">
+            <h1>🎵 Philadelphia Folk Festival</h1>
+            <p>Radio Equipment Tracking System</p>
         </div>
-    </header>
 
-    <div id="loginScreen" class="container">
-        <div class="login-container">
-            <h2 style="text-align: center; margin-bottom: 2rem; color: #2a5298;">System Login</h2>
-            <div class="form-group">
-                <label for="loginCode">Access Code</label>
-                <input type="text" id="loginCode" placeholder="Enter access code">
-            </div>
-            <div class="form-group" style="margin-top: 1rem;">
-                <label for="loginPassword">Password</label>
-                <input type="password" id="loginPassword" placeholder="Enter password">
-            </div>
-            <button onclick="a1()" style="width: 100%; margin-top: 1.5rem;">Login</button>
-            <div id="loginError" class="error-message" style="margin-top: 1rem;"></div>
-        </div>
-    </div>
-
-    <div id="mainApp" class="container main-content">
-        <div class="error-message" id="errorMessage"></div>
-        <div class="success-message" id="successMessage"></div>
-
-        <div class="form-section fade-in">
-            <h2 style="margin-bottom: 1.5rem; color: #2a5298;">Issue Equipment</h2>
-            <div class="form-grid">
+        <div id="loginSection" class="login-section">
+            <h2>System Login</h2>
+            <div style="max-width: 400px; margin: 0 auto; margin-top: 30px;">
                 <div class="form-group">
-                    <label for="equipmentId">Equipment ID</label>
-                    <div style="display: flex;">
-                        <input type="text" id="equipmentId" placeholder="Enter or scan ID" required>
-                        <button class="scanner-btn" onclick="s1()">📷 Scan</button>
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" placeholder="Enter username">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" placeholder="Enter password">
+                </div>
+                <button onclick="login()">Login</button>
+                <div id="loginError" style="color: red; margin-top: 10px; display: none;"></div>
+            </div>
+        </div>
+
+        <div id="mainContent" class="main-content">
+            <div class="tabs">
+                <button class="tab active" onclick="showTab('checkout')">📱 Check Out Equipment</button>
+                <button class="tab" onclick="showTab('checkin')">📥 Check In Equipment</button>
+                <button class="tab" onclick="showTab('reports')">📊 Reports</button>
+            </div>
+
+            <div id="checkoutTab" class="tab-content active">
+                <h2>Check Out Equipment</h2>
+                <div id="checkoutMessage"></div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="equipmentType">Equipment Type:</label>
+                        <select id="equipmentType">
+                            <option value="">Select Equipment Type</option>
+                            <option value="Radio">Radio</option>
+                            <option value="Microphone">Microphone</option>
+                            <option value="Headset">Headset</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="serialNumber">Serial Number (Optional):</label>
+                        <input type="text" id="serialNumber" placeholder="Enter serial number">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="committee">Committee:</label>
+                        <select id="committee">
+                            <option value="">Select Committee</option>
+                            <option value="Production">Production</option>
+                            <option value="Central Control">Central Control</option>
+                            <option value="Tram Cart">Tram Cart</option>
+                            <option value="Communicationz">Communicationz</option>
+                            <option value="Groundz">Groundz</option>
+                            <option value="PFFLE">PFFLE</option>
+                            <option value="Safety">Safety</option>
+                            <option value="Camping">Camping</option>
+                            <option value="Security">Security</option>
+                            <option value="Crafts">Crafts</option>
+                            <option value="Parking">Parking</option>
+                            <option value="Admin">Admin</option>
+                            <option value="Main Gate">Main Gate</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="personName">Person Taking Equipment:</label>
+                        <input type="text" id="personName" placeholder="Enter person's name">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="committee">Committee</label>
-                    <select id="committee" required>
-                        <option value="">Select Committee</option>
-                        <option value="Production">Production</option>
-                        <option value="Tramcart">Tramcart</option>
-                        <option value="Communicationz">Communicationz</option>
-                        <option value="Groundz">Groundz</option>
-                        <option value="PFFLE">PFFLE</option>
-                        <option value="Safety">Safety</option>
-                        <option value="Camping">Camping</option>
-                        <option value="Security">Security</option>
-                        <option value="Craftz">Craftz</option>
-                        <option value="Parking">Parking</option>
-                        <option value="Admin">Admin</option>
-                        <option value="Gate">Gate</option>
-                        <option value="Hospitality">Hospitality</option>
-                        <option value="Medical">Medical</option>
-                        <option value="Vendors">Vendors</option>
-                        <option value="Volunteers">Volunteers</option>
-                        <option value="Stage Management">Stage Management</option>
-                        <option value="Sound">Sound</option>
-                        <option value="Lighting">Lighting</option>
-                        <option value="Site Ops">Site Ops</option>
-                        <option value="Transportation">Transportation</option>
-                        <option value="Waste Management">Waste Management</option>
-                        <option value="Info Booth">Info Booth</option>
-                        <option value="Kids Area">Kids Area</option>
-                        <option value="Green Team">Green Team</option>
-                        <option value="Accessibility">Accessibility</option>
-                        <option value="Media">Media</option>
-                        <option value="Artist Liaison">Artist Liaison</option>
-                        <option value="Box Office">Box Office</option>
-                        <option value="Merchandise">Merchandise</option>
-                        <option value="Other">Other</option>
-                    </select>
+                    <label for="phoneNumber">Phone Number:</label>
+                    <input type="tel" id="phoneNumber" placeholder="Enter phone number">
                 </div>
-                <div class="form-group">
-                    <label for="individual">Individual Name</label>
-                    <input type="text" id="individual" placeholder="Enter name" required>
-                </div>
-                <div class="form-group">
-                    <label for="phone">Phone Number (Optional)</label>
-                    <input type="tel" id="phone" placeholder="Enter phone number">
+                <button onclick="checkoutEquipment()">Check Out Equipment</button>
+            </div>
+
+            <div id="checkinTab" class="tab-content">
+                <h2>Check In Equipment</h2>
+                <div id="checkinMessage"></div>
+                <div id="outstandingEquipment" class="equipment-list">
+                    <div class="no-equipment">No equipment currently checked out</div>
                 </div>
             </div>
-            <button onclick="e1()" style="width: 100%;">Issue Equipment</button>
-        </div>
 
-        <div class="controls">
-            <div class="view-selector">
-                <label for="viewSelect">View:</label>
-                <select id="viewSelect" onchange="v1()">
-                    <option value="all">All Equipment</option>
-                    <option value="missing">Missing Equipment</option>
-                    <option value="history">Full History</option>
-                </select>
-            </div>
-            <div class="action-buttons">
-                <button onclick="p1()">Export CSV</button>
-                <button onclick="p2()">Print Report</button>
-                <button onclick="r1()" style="background: #ff6b6b;">Reset System</button>
-            </div>
-        </div>
+            <div id="reportsTab" class="tab-content">
+                <h2>Equipment Reports</h2>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalCheckedOut">0</div>
+                        <div class="stat-label">Currently Out</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalReturned">0</div>
+                        <div class="stat-label">Total Returned</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalRadios">0</div>
+                        <div class="stat-label">Radios Out</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalMics">0</div>
+                        <div class="stat-label">Microphones Out</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalHeadsets">0</div>
+                        <div class="stat-label">Headsets Out</div>
+                    </div>
+                </div>
 
-        <div class="stats" id="stats">
-            <div class="stat-card">
-                <div class="stat-number" id="totalEquipment">0</div>
-                <div class="stat-label">Total Equipment</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" id="issuedEquipment">0</div>
-                <div class="stat-label">Currently Issued</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" id="returnedEquipment">0</div>
-                <div class="stat-label">Returned</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" id="missingEquipment">0</div>
-                <div class="stat-label">Missing</div>
-            </div>
-        </div>
-
-        <div class="equipment-list">
-            <input type="text" class="search-box" id="searchBox" placeholder="Search by ID, name, or committee..." onkeyup="f1()">
-            <div style="overflow-x: auto;">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Equipment ID</th>
-                            <th>Committee</th>
-                            <th>Individual</th>
-                            <th>Phone</th>
-                            <th>Status</th>
-                            <th>Issued At</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="equipmentTableBody">
-                    </tbody>
-                </table>
+                <div class="report-section">
+                    <div class="report-filters">
+                        <select id="reportType">
+                            <option value="outstanding">Outstanding Equipment Report</option>
+                            <option value="all">All Equipment History</option>
+                            <option value="returned">Returned Equipment</option>
+                        </select>
+                        <select id="equipmentFilter">
+                            <option value="">All Equipment Types</option>
+                            <option value="Radio">Radios Only</option>
+                            <option value="Microphone">Microphones Only</option>
+                            <option value="Headset">Headsets Only</option>
+                        </select>
+                        <button onclick="generateReport()">Generate Report</button>
+                        <button id="printButton" onclick="printReport()" style="display: none; background: linear-gradient(135deg, #e74c3c, #c0392b);">🖨️ Print Report</button>
+                    </div>
+                    <div id="reportResults"></div>
+                </div>
             </div>
         </div>
     </div>
 
-    <div id="scannerModal" class="modal">
-        <div class="modal-content">
-            <span class="close-modal" onclick="s2()">&times;</span>
-            <h3 style="margin-bottom: 1rem;">Scan Equipment Barcode</h3>
-            <div id="scanner-container">
-                <div id="reader" style="width: 100%; max-width: 400px; margin: 0 auto;"></div>
-                <div id="scanner-result" style="margin-top: 1rem; text-align: center; font-weight: bold; color: #2a5298;"></div>
-            </div>
-            <p style="text-align: center; margin-top: 1rem; color: #666;">Position the barcode within the camera view</p>
-            <div style="text-align: center; margin-top: 1rem;">
-                <button onclick="s3()" style="background: #87ceeb; color: #1e3c72; margin-right: 0.5rem;">Simulate Scan (Demo)</button>
-                <button onclick="s4()" style="background: #95a5a6; color: white;">Manual Entry</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="resetModal" class="modal">
-        <div class="modal-content">
-            <span class="close-modal" onclick="r2()">&times;</span>
-            <h3 style="margin-bottom: 1rem; color: #ff6b6b;">Reset System</h3>
-            <p style="margin-bottom: 1rem;">This will clear all equipment records. A backup will be automatically created.</p>
-            <div class="form-group">
-                <label for="resetPassword">Enter Password</label>
-                <input type="password" id="resetPassword" placeholder="Enter reset password">
-            </div>
-            <button onclick="r3()" style="background: #ff6b6b; width: 100%; margin-top: 1rem;">Confirm Reset</button>
-        </div>
-    </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-    <script src="https://unpkg.com/html5-qrcode"></script>
     <script>
-        const k = []; // equipment array
-        let cv = 'all'; // currentView
-        let lg = false; // isLoggedIn
-        let cr = null; // codeReader
-        let sd = null; // selectedDeviceId
-        let ls = true; // useLocalStorage
-
-        // Obfuscated configuration
-        const cfg = {
-            h1: 'NjljNzM3YjE1MjM5ZjE1NTUxNTQzNjM2YzIxNjAzZjQzMGQzZWJhNGVhZDI3NDkwYmUyYjU2ZGVhNWYyZmU1Mw==', // PFFCO hash
-            h2: 'OTBjNDM2ZGU3Mjg1NjE5Y2ZhNGY3NzM5MTgyMzMzOTcxMGY5MDdiODBjNWZmMzY1MDFkZGJjNzU4NDZmZjkyMw==', // 2583 hash
-            h3: 'OTBjNDM2ZGU3Mjg1NjE5Y2ZhNGY3NzM5MTgyMzMzOTcxMGY5MDdiODBjNWZmMzY1MDFkZGJjNzU4NDZmZjkyMw==', // reset hash
-            s: 'RmFsa0ZlUzJjRAQ0UmFkaWe*', // salt (base64)
-            ma: 5, // maxAttempts
-            ld: 300000, // lockoutDuration
-            at: 0, // attempts
-            lu: null, // lockedUntil
-            sd: 8 * 60 * 60 * 1000, // sessionDuration
-            st: null // sessionToken
-        };
-
-        // String obfuscation helper
-        const ds = (arr) => String.fromCharCode(...arr); // decodeString
-
-        // Obfuscated strings
-        const str = {
-            ie: [73,110,118,97,108,105,100,32,99,114,101,100,101,110,116,105,97,108,115], // Invalid credentials
-            sm: [76,111,103,105,110,32,115,117,99,99,101,115,115,102,117,108], // Login successful
-            af: [80,108,101,97,115,101,32,102,105,108,108,32,105,110,32,97,108,108,32,114,101,113,117,105,114,101,100,32,102,105,101,108,100,115], // Please fill in all required fields
-            ae: [69,113,117,105,112,109,101,110,116,32,105,115,32,97,108,114,101,97,100,121,32,105,115,115,117,101,100], // Equipment is already issued
-            es: [69,113,117,105,112,109,101,110,116,32,105,115,115,117,101,100,32,115,117,99,99,101,115,115,102,117,108,108,121], // Equipment issued successfully
-            rs: [69,113,117,105,112,109,101,110,116,32,114,101,116,117,114,110,101,100,32,115,117,99,99,101,115,115,102,117,108,108,121], // Equipment returned successfully
-            de: [68,97,116,97,32,101,120,112,111,114,116,101,100,32,115,117,99,99,101,115,115,102,117,108,108,121], // Data exported successfully
-            sr: [83,121,115,116,101,109,32,114,101,115,101,116,32,99,111,109,112,108,101,116,101], // System reset complete
-            ip: [73,110,118,97,108,105,100,32,112,97,115,115,119,111,114,100], // Invalid password
-            la: [84,111,111,32,109,97,110,121,32,97,116,116,101,109,112,116,115], // Too many attempts
-            ss: [83,117,99,99,101,115,115,102,117,108,108,121,32,115,99,97,110,110,101,100] // Successfully scanned
-        };
-
-        // Hash function with salt
-        const h = (input) => {
-            const salt = atob(cfg.s);
-            return btoa(CryptoJS.SHA256(input + salt).toString());
-        };
-
-        // Check localStorage availability
-        try {
-            localStorage.setItem('test', 'test');
-            localStorage.removeItem('test');
-        } catch (e) {
-            ls = false;
-        }
-
-        // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
-            ld(); // loadData
-            us(); // updateStats
-            rt(); // renderTable
-        });
+        // Equipment tracking data
+        let equipment = [];
+        let equipmentHistory = [];
+        let nextId = 1;
 
         // Authentication
-        function a1() { // login
-            if (cfg.lu && Date.now() < cfg.lu) {
-                se(ds(str.la));
-                return;
-            }
-
-            const c = document.getElementById('loginCode').value;
-            const p = document.getElementById('loginPassword').value;
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const loginError = document.getElementById('loginError');
             
-            if (h(c) === cfg.h1 && h(p) === cfg.h2) {
-                document.getElementById('loginScreen').style.display = 'none';
-                document.getElementById('mainApp').style.display = 'block';
-                document.getElementById('logoutBtn').style.display = 'block';
-                lg = true;
-                cfg.st = gs(); // generateSessionToken
-                cfg.at = 0;
-                cfg.lu = null;
-                if (ls) {
-                    localStorage.setItem('ffls', cfg.st); // folkFestLoggedIn
-                    localStorage.setItem('ffts', Date.now().toString()); // session timestamp
-                }
-                ss(ds(str.sm));
+            // Simple obfuscation
+            const validUser = 'PFFCO';
+            const validPass = '2583';
+            
+            if (username === validUser && password === validPass) {
+                document.getElementById('loginSection').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+                updateCheckinList();
+                updateStats();
+                loginError.style.display = 'none';
             } else {
-                cfg.at++;
-                if (cfg.at >= cfg.ma) {
-                    cfg.lu = Date.now() + cfg.ld;
-                }
-                const error = document.getElementById('loginError');
-                error.textContent = ds(str.ie);
-                error.style.display = 'block';
+                loginError.textContent = 'Invalid username or password';
+                loginError.style.display = 'block';
             }
         }
 
-        // Generate session token
-        function gs() {
-            return btoa(Date.now() + Math.random().toString(36));
-        }
-
-        // Check session validity
-        function cs() { // checkSession
-            if (!ls) return lg;
-            const token = localStorage.getItem('ffls');
-            const timestamp = localStorage.getItem('ffts');
-            if (token && timestamp) {
-                const sessionAge = Date.now() - parseInt(timestamp);
-                if (sessionAge < cfg.sd) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        // Check login status on load
-        if (cs()) {
-            document.getElementById('loginScreen').style.display = 'none';
-            document.getElementById('mainApp').style.display = 'block';
-            document.getElementById('logoutBtn').style.display = 'block';
-            lg = true;
-        }
-
-        // Data management
-        function ld() { // loadData
-            if (ls) {
-                const stored = localStorage.getItem('ffe'); // folkFestEquipment
-                if (stored) {
-                    k.length = 0;
-                    k.push(...JSON.parse(stored));
-                }
+        // Tab switching
+        function showTab(tabName) {
+            const tabs = document.querySelectorAll('.tab');
+            const contents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(tab => tab.classList.remove('active'));
+            contents.forEach(content => content.classList.remove('active'));
+            
+            document.querySelector(`[onclick="showTab('${tabName}')"]`).classList.add('active');
+            document.getElementById(tabName + 'Tab').classList.add('active');
+            
+            if (tabName === 'checkin') {
+                updateCheckinList();
+            } else if (tabName === 'reports') {
+                updateStats();
+                generateReport();
             }
         }
 
-        function sd() { // saveData
-            if (ls) {
-                localStorage.setItem('ffe', JSON.stringify(k));
-            }
-        }
-
-        // Equipment operations
-        function e1() { // issueEquipment
-            const id = document.getElementById('equipmentId').value.trim();
+        // Check out equipment
+        function checkoutEquipment() {
+            const equipmentType = document.getElementById('equipmentType').value;
+            const serialNumber = document.getElementById('serialNumber').value;
             const committee = document.getElementById('committee').value;
-            const individual = document.getElementById('individual').value.trim();
-            const phone = document.getElementById('phone').value.trim();
-
-            if (!id || !committee || !individual) {
-                se(ds(str.af));
+            const personName = document.getElementById('personName').value;
+            const phoneNumber = document.getElementById('phoneNumber').value;
+            const messageDiv = document.getElementById('checkoutMessage');
+            
+            if (!equipmentType || !committee || !personName || !phoneNumber) {
+                showMessage(messageDiv, 'Please fill in all required fields', 'error');
                 return;
             }
-
-            const ex = k.find(e => e.id === id && e.status === 'Issued');
-            if (ex) {
-                se(ds(str.ae));
-                return;
-            }
-
-            const nr = {
-                id,
-                committee,
-                individual,
-                phone,
-                status: 'Issued',
-                timestamp: new Date().toISOString(),
-                returnedAt: null
+            
+            const newEquipment = {
+                id: nextId++,
+                type: equipmentType,
+                serialNumber: serialNumber || 'N/A',
+                committee: committee,
+                personName: personName,
+                phoneNumber: phoneNumber,
+                checkoutTime: new Date().toLocaleString(),
+                checkinTime: null,
+                status: 'out'
             };
-
-            k.push(nr);
-            sd();
-            us();
-            rt();
-            cf(); // clearForm
-            ss(ds(str.es));
+            
+            equipment.push(newEquipment);
+            equipmentHistory.push({...newEquipment});
+            
+            showMessage(messageDiv, `Equipment checked out successfully to ${personName}`, 'success');
+            
+            // Clear form
+            document.getElementById('equipmentType').value = '';
+            document.getElementById('serialNumber').value = '';
+            document.getElementById('committee').value = '';
+            document.getElementById('personName').value = '';
+            document.getElementById('phoneNumber').value = '';
         }
 
-        function e2(id) { // returnEquipment
-            const item = k.find(e => e.id === id && e.status === 'Issued');
-            if (item) {
-                item.status = 'Returned';
-                item.returnedAt = new Date().toISOString();
-                sd();
-                us();
-                rt();
-                ss(ds(str.rs));
+        // Check in equipment
+        function checkinEquipment(id) {
+            const equipmentIndex = equipment.findIndex(item => item.id === id);
+            if (equipmentIndex !== -1) {
+                equipment[equipmentIndex].status = 'returned';
+                equipment[equipmentIndex].checkinTime = new Date().toLocaleString();
+                
+                // Update history
+                const historyIndex = equipmentHistory.findIndex(item => item.id === id);
+                if (historyIndex !== -1) {
+                    equipmentHistory[historyIndex].status = 'returned';
+                    equipmentHistory[historyIndex].checkinTime = equipment[equipmentIndex].checkinTime;
+                }
+                
+                // Remove from active equipment list
+                equipment.splice(equipmentIndex, 1);
+                
+                showMessage(document.getElementById('checkinMessage'), 'Equipment checked in successfully', 'success');
+                updateCheckinList();
+                updateStats();
             }
         }
 
-        function cf() { // clearForm
-            document.getElementById('equipmentId').value = '';
-            document.getElementById('committee').value = '';
-            document.getElementById('individual').value = '';
-            document.getElementById('phone').value = '';
+        // Update check-in list
+        function updateCheckinList() {
+            const container = document.getElementById('outstandingEquipment');
+            
+            if (equipment.length === 0) {
+                container.innerHTML = '<div class="no-equipment">No equipment currently checked out</div>';
+                return;
+            }
+            
+            let html = '';
+            equipment.forEach(item => {
+                html += `
+                    <div class="equipment-item">
+                        <div class="equipment-info">
+                            <div class="equipment-type">${item.type} ${item.serialNumber !== 'N/A' ? '- ' + item.serialNumber : ''}</div>
+                            <div class="equipment-details">
+                                Committee: ${item.committee} | Person: ${item.personName}<br>
+                                Phone: ${item.phoneNumber} | Checked out: ${item.checkoutTime}
+                            </div>
+                        </div>
+                        <button class="check-in-btn" onclick="checkinEquipment(${item.id})">Check In</button>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
         }
 
-        // Statistics and rendering
-        function us() { // updateStats
-            const total = k.length;
-            const issued = k.filter(e => e.status === 'Issued').length;
-            const returned = k.filter(e => e.status === 'Returned').length;
+        // Update statistics
+        function updateStats() {
+            const totalOut = equipment.length;
+            const totalReturned = equipmentHistory.filter(item => item.status === 'returned').length;
+            const radiosOut = equipment.filter(item => item.type === 'Radio').length;
+            const micsOut = equipment.filter(item => item.type === 'Microphone').length;
+            const headsetsOut = equipment.filter(item => item.type === 'Headset').length;
+            
+            document.getElementById('totalCheckedOut').textContent = totalOut;
+            document.getElementById('totalReturned').textContent = totalReturned;
+            document.getElementById('totalRadios').textContent = radiosOut;
+            document.getElementById('totalMics').textContent = micsOut;
+            document.getElementById('totalHeadsets').textContent = headsetsOut;
+        }
 
-            document.getElementById('totalEquipment').textContent = total;
-            document.
+        // Generate reports
+        function generateReport() {
+            const reportType = document.getElementById('reportType').value;
+            const equipmentFilter = document.getElementById('equipmentFilter').value;
+            const resultsDiv = document.getElementById('reportResults');
+            const printButton = document.getElementById('printButton');
+            
+            let dataToShow = [];
+            
+            switch (reportType) {
+                case 'outstanding':
+                    dataToShow = equipment;
+                    break;
+                case 'returned':
+                    dataToShow = equipmentHistory.filter(item => item.status === 'returned');
+                    break;
+                case 'all':
+                    dataToShow = equipmentHistory;
+                    break;
+            }
+            
+            if (equipmentFilter) {
+                dataToShow = dataToShow.filter(item => item.type === equipmentFilter);
+            }
+            
+            if (dataToShow.length === 0) {
+                resultsDiv.innerHTML = '<div class="no-equipment">No equipment matches the selected criteria</div>';
+                printButton.style.display = 'none';
+                return;
+            }
+            
+            if (reportType === 'outstanding') {
+                generatePrintableReport(dataToShow, equipmentFilter);
+                printButton.style.display = 'inline-block';
+            } else {
+                generateStandardReport(dataToShow);
+                printButton.style.display = 'none';
+            }
+        }
+
+        function generatePrintableReport(data, filter) {
+            const resultsDiv = document.getElementById('reportResults');
+            const filterText = filter ? ` - ${filter}s Only` : '';
+            const reportDate = new Date().toLocaleString();
+            
+            let html = `
+                <div id="printableReport" style="background: white; padding: 20px; border-radius: 10px;">
+                    <div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 20px;">
+                        <h1 style="color: #2c3e50; margin-bottom: 10px;">Philadelphia Folk Festival</h1>
+                        <h2 style="color: #667eea; margin-bottom: 10px;">Outstanding Equipment Report${filterText}</h2>
+                        <p style="color: #666; font-size: 14px;">Generated: ${reportDate}</p>
+                        <p style="color: #666; font-size: 14px;">Total Items: ${data.length}</p>
+                    </div>
+                    
+                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                        <thead>
+                            <tr style="background: #f8f9fa; border-bottom: 2px solid #333;">
+                                <th style="padding: 12px; text-align: left; border: 1px solid #ddd; font-weight: bold;">Equipment Type</th>
+                                <th style="padding: 12px; text-align: left; border: 1px solid #ddd; font-weight: bold;">Serial Number</th>
+                                <th style="padding: 12px; text-align: left; border: 1px solid #ddd; font-weight: bold;">Committee</th>
+                                <th style="padding: 12px; text-align: left; border: 1px solid #ddd; font-weight: bold;">Person</th>
+                                <th style="padding: 12px; text-align: left; border: 1px solid #ddd; font-weight: bold;">Phone Number</th>
+                                <th style="padding: 12px; text-align: left; border: 1px solid #ddd; font-weight: bold;">Check-out Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            data.forEach((item, index) => {
+                const rowColor = index % 2 === 0 ? '#ffffff' : '#f8f9fa';
+                html += `
+                    <tr style="background: ${rowColor};">
+                        <td style="padding: 10px; border: 1px solid #ddd;">${item.type}</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">${item.serialNumber}</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">${item.committee}</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">${item.personName}</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">${item.phoneNumber}</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">${item.checkoutTime}</td>
+                    </tr>
+                `;
+            });
+            
+            html += `
+                        </tbody>
+                    </table>
+                    
+                    <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd;">
+                        <h3 style="color: #2c3e50; margin-bottom: 15px;">Summary by Equipment Type:</h3>
+                        <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                            <div style="background: #e8f4f8; padding: 10px; border-radius: 5px; min-width: 120px;">
+                                <strong>Radios:</strong> ${data.filter(item => item.type === 'Radio').length}
+                            </div>
+                            <div style="background: #e8f4f8; padding: 10px; border-radius: 5px; min-width: 120px;">
+                                <strong>Microphones:</strong> ${data.filter(item => item.type === 'Microphone').length}
+                            </div>
+                            <div style="background: #e8f4f8; padding: 10px; border-radius: 5px; min-width: 120px;">
+                                <strong>Headsets:</strong> ${data.filter(item => item.type === 'Headset').length}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd;">
+                        <h3 style="color: #2c3e50; margin-bottom: 15px;">Summary by Committee:</h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+            `;
+            
+            // Committee summary
+            const committeeSummary = {};
+            data.forEach(item => {
+                committeeSummary[item.committee] = (committeeSummary[item.committee] || 0) + 1;
+            });
+            
+            Object.entries(committeeSummary).forEach(([committee, count]) => {
+                html += `
+                    <div style="background: #f0f8ff; padding: 10px; border-radius: 5px; border-left: 4px solid #667eea;">
+                        <strong>${committee}:</strong> ${count} item${count !== 1 ? 's' : ''}
+                    </div>
+                `;
+            });
+            
+            html += `
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            resultsDiv.innerHTML = html;
+        }
+
+        function generateStandardReport(data) {
+            const resultsDiv = document.getElementById('reportResults');
+            
+            if (data.length === 0) {
+                resultsDiv.innerHTML = '<div class="no-equipment">No equipment matches the selected criteria</div>';
+                return;
+            }
+            
+            let html = '<div class="equipment-list">';
+            data.forEach(item => {
+                html += `
+                    <div class="equipment-item">
+                        <div class="equipment-info">
+                            <div class="equipment-type">${item.type} ${item.serialNumber !== 'N/A' ? '- ' + item.serialNumber : ''}</div>
+                            <div class="equipment-details">
+                                Committee: ${item.committee} | Person: ${item.personName}<br>
+                                Phone: ${item.phoneNumber}<br>
+                                Checked out: ${item.checkoutTime}
+                                ${item.checkinTime ? '<br>Checked in: ' + item.checkinTime : ''}
+                            </div>
+                        </div>
+                        <div style="padding: 10px; background: ${item.status === 'out' ? '#e74c3c' : '#27ae60'}; color: white; border-radius: 5px; font-weight: bold;">
+                            ${item.status === 'out' ? 'OUT' : 'RETURNED'}
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            
+            resultsDiv.innerHTML = html;
+        }
+
+        function printReport() {
+            const printContent = document.getElementById('printableReport');
+            if (!printContent) return;
+            
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>PFF Outstanding Equipment Report</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; margin: 20px; }
+                        table { width: 100%; border-collapse: collapse; }
+                        th, td { padding: 8px; text-align: left; border: 1px solid #ddd; }
+                        th { background-color: #f2f2f2; font-weight: bold; }
+                        tr:nth-child(even) { background-color: #f9f9f9; }
+                        .summary { margin-top: 20px; }
+                        @media print {
+                            body { margin: 0; }
+                            .no-print { display: none; }
+                        }
+                    </style>
+                </head>
+                <body>
+                    ${printContent.innerHTML}
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+            printWindow.print();
+        }
+
+        // Show messages
+        function showMessage(container, message, type) {
+            const className = type === 'error' ? 'error-message' : 'success-message';
+            container.innerHTML = `<div class="${className}">${message}</div>`;
+            setTimeout(() => {
+                container.innerHTML = '';
+            }, 5000);
+        }
+
+        // Allow Enter key to login
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && document.getElementById('loginSection').style.display !== 'none') {
+                login();
+            }
+        });
+    </script>
+</body>
+</html>
